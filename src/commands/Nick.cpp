@@ -10,41 +10,33 @@
 /*                                                                                          */
 /* **************************************************************************************** */
 
-#include "../inc/Server.hpp"
+#include "../../inc/Server.hpp"
 
-int checkValidPort(std::string port)
+bool Server::isNickTaken(const std::string &nickname) const
 {
-    int portNo;
-    if (port.length() > 5)
-        return 0;
-    for (size_t i = 0; i < port.length(); i++)
-    {
-        if (!isdigit(port[i]))
-            return 0;
-    }
-    portNo = std::stoi(port);
-    if (portNo < 1024 || portNo > 49151)
-        return 0;
-    return portNo;
+	for (const auto &client : _clients)
+	{
+		if (client->getNick() == nickname)
+			return (true);
+	}
+	return (false);
 }
 
-int main(int argc, char **argv)
+void Server::Nick(Client &client, const std::string &nickname)
 {
-    if (argc != 3)
-    {
-        std::cout << "Usage: ./ircserv <port> <password>";
-        return (0);
-    }
-    int port = checkValidPort(argv[1]);
-    Server server(port, argv[2]);
-    try
-    {
-        server.runServer();
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << e.what() << '\n';
-        return (1);
-    }
-    return 0;
+	if (nickname.empty()) 
+	{
+		sendToClient(client, "431 ERR_NONICKNAMEGIVEN :No nickname given");
+		return;
+	}
+
+	if (isNickTaken(nickname))
+	{
+		sendToClient(client, "433 ERR_NICKNAMEINUSE " + nickname + " :Nickname is already in use");
+		return;
+	}
+
+	client.setNick(nickname);
+	client.setNickOK(true);
+	sendToClient(client, "NICK " + nickname);
 }

@@ -10,42 +10,21 @@
 /*                                                                                          */
 /* **************************************************************************************** */
 
-#pragma once
+#include "../../inc/Server.hpp"
 
-#include <string>
-#include <netinet/in.h>
-
-enum clientState
+void Server::UserName(Client &client, const std::vector<std::string> &tokens, size_t &i)
 {
-    REGISTERING,
-    REGISTERED,
-    DISCONNECTED
-};
+	if (i + 4 >= tokens.size())
+	{
+		sendToClient(client, "461 USER :Not enough parameters");
+		return;
+	}
 
-class Client
-{
-public:
-    // constructors
-    Client();
-    Client(int fd, const sockaddr_in &client_addr);
-    Client(const Client &other);
-    Client &operator=(const Client &other);
-    ~Client();
+	std::string username = tokens[i + 1];
+	std::string realname = tokens[i + 4];
 
-    // methods
-    void setFd(int value);
-    int getFd() const;
+	client.setUserName(username);
+	client.setRealName(realname);
 
-    void setState(clientState state);
-    clientState getState() const;
-
-private:
-    int _fd;
-    int _state;
-    sockaddr_in _addr;
-    std::string _nick;
-    std::string _userName;
-    bool _passwdOK;
-    bool _nickOK;
-    bool _userNameOK;
-};
+	sendToClient(client, "001 :Welcome to the IRC server, " + username);
+}

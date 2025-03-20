@@ -10,7 +10,7 @@
 /*                                                                                          */
 /* **************************************************************************************** */
 
-#include "Client.hpp"
+#include "../inc/Client.hpp"
 
 Client::Client() {}
 
@@ -52,3 +52,24 @@ int Client::getFd() const { return (_fd); }
 
 void Client::setState(clientState state) { _state = state; }
 clientState Client::getState() const { return (static_cast<clientState>(_state)); }
+
+void Client::setUserName(std::string userName) { _userName = userName; }
+std::string Client::getUserName() const { return(_userName); }
+
+void Client::setRealName(std::string realName) { _realName = realName; }
+std::string Client::getRealName() const { return(_realName); }
+
+void Client::setNick(std::string nick) { _nick = nick; }
+std::string Client::getNick() const { return(_nick); }
+
+void Client::setPassword(std::string password) { _password = password; }
+std::string Client::getPassword() const { return(_password); }
+
+void Client::setPasswdOK(bool ok) { _passwdOK = ok; }
+bool Client::getPasswdOK() { return(_passwdOK); }
+
+void Client::setNickOK(bool ok) { _nickOK = ok; }
+bool Client::getNickOK() {return(_nickOK); }
+
+void Client::setUserNameOK(bool ok) { _userNameOK = ok; }
+bool Client::getUserNameOK() {return(_userNameOK); }

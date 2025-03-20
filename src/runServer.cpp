@@ -10,12 +10,11 @@
 /*                                                                                          */
 /* **************************************************************************************** */
 
-#include "Server.hpp"
+#include "../inc/Server.hpp"
 #include <sys/socket.h>
 #include <poll.h>
 #include <system_error>
 #include <unistd.h>
-#include <cstring>
 
 // Socket Creation socket()-> Binding bind() -> Listening listen() -> Accepting Connections accept() -> Reading data read()
 
@@ -90,63 +89,59 @@ void Server::acceptConnection(int server_fd)
 
 void Server::handleConnections(int server_fd)
 {
-    std::vector<struct pollfd> fds;
-    while (true) // here we should have smth else cos signals might stop running server i assume
-    {
+	std::vector<struct pollfd> fds;
+	while (true) // here we should have smth else cos signals might stop running server i assume
+	{
 
-        fds.clear();
-        fds.push_back({server_fd, POLLIN, 0}); // Monitor the server socket for new connections
+		fds.clear();
+		fds.push_back({server_fd, POLLIN, 0}); // Monitor the server socket for new connections
 
-        for (const auto &client : _clients)
-        {
-            fds.push_back({client->getFd(), POLLIN, 0}); // Monitor active clients
-        }
-        int poll_result = poll(fds.data(), fds.size(), -1);
-        if (poll_result == -1)
-        {
-            perror("Poll failed");
-            break;
-        }
+		for (const auto &client : _clients)
+		{
+			fds.push_back({client->getFd(), POLLIN, 0}); // Monitor active clients
+		}
+		int poll_result = poll(fds.data(), fds.size(), -1);
+		if (poll_result == -1)
+		{
+			perror("Poll failed");
+			break;
+		}
 
-        // i need to connect a new one and check existing ones
+		// i need to connect a new one and check existing ones
 
-        // Check if there are incoming connections on the server socket
-        // @POLLIN flag shows that there is data in the socket
-        if (fds[0].revents & POLLIN)
-        {
-            acceptConnection(server_fd);
-        }
+		// Check if there are incoming connections on the server socket
+		// @POLLIN flag shows that there is data in the socket
+		if (fds[0].revents & POLLIN)
+		{
+			acceptConnection(server_fd);
+		}
 
-        // server socket is always 0
-        for (size_t i = 1; i < fds.size(); ++i)
-        {
-            if (fds[i].revents & POLLIN)
-            {
-                char buffer[BUFFER_SIZE];
-                ssize_t bytes_read = recv(fds[i].fd, buffer, sizeof(buffer) - 1, 0);
-                if (bytes_read <= 0)
-                {
-                    perror("recv failed");
-                    close(fds[i].fd); // disconnect client
-                    auto it = _clients.begin() + i - 1;
-                    delete *it;
-                    _clients.erase(it); // delete from the list
-                    std::cout << "Client disconnected" << std::endl;
-                }
-                else
-                {
-                    buffer[bytes_read] = '\0';
-                    std::string message(buffer);
-
-                    // handle message
-                    if (!_clients.empty())
-                    {
-                        handleClientMessage(*_clients[0], "Hello");
-                    }
-                }
-            }
-        }
-    }
+		// server socket is always 0
+		for (size_t i = 1; i < fds.size(); ++i)
+		{
+			if (fds[i].revents & POLLIN)
+			{
+				char buffer[BUFFER_SIZE];
+				ssize_t bytes_read = recv(fds[i].fd, buffer, sizeof(buffer) - 1, 0);
+				if (bytes_read <= 0)
+				{
+					perror("recv failed");
+					close(fds[i].fd); // disconnect client
+					auto it = _clients.begin() + i - 1;
+					delete *it;
+					_clients.erase(it); // delete from the list
+					std::cout << "Client disconnected" << std::endl;
+				}
+				else
+				{
+					buffer[bytes_read] = '\0';
+					std::string message(buffer);
+					// handle message
+					handleClientMessage(*_clients[i - 1], message);
+				}
+			}
+		}
+	}
 }
 
 void Server::runServer()
