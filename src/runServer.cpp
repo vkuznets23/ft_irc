@@ -1,20 +1,21 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   runServer.cpp                                      :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: viktoria <viktoria@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/18 15:37:28 by viktoria          #+#    #+#             */
-/*   Updated: 2025/03/19 12:52:57 by viktoria         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+/* **************************************************************************************** */
+/*                                                                                          */
+/*                                                        ::::::::::: :::::::::   ::::::::  */
+/*                                                           :+:     :+:    :+: :+:    :+:  */
+/*                                                          :+:     :+:    :+: :+:          */
+/*                                                         :+:     :+:+:+:+:  :+:           */
+/*  By: Viktoriia Kuznetsova<vkuznets@student.hive.fi>    :+:     :+:    :+: :+:            */
+/*      Juliette Mouette<jmouette@student.hive.fi>,      :+:     :+:    :+: :+:    :+:      */
+/*      									        ::::::::::: :::    :::  ::::::::        */
+/*                                                                                          */
+/* **************************************************************************************** */
 
 #include "Server.hpp"
 #include <sys/socket.h>
 #include <poll.h>
 #include <system_error>
 #include <unistd.h>
+#include <cstring>
 
 // Socket Creation socket()-> Binding bind() -> Listening listen() -> Accepting Connections accept() -> Reading data read()
 
