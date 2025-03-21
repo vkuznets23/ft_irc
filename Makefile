@@ -19,8 +19,9 @@ CFLAGS = -Wall -Wextra -Werror -std=c++11
 
 SRC_DIR = src
 CMD_DIR = src/commands
+INC_DIR = inc
 OBJ_DIR = obj
-CMD_OBJ_DIR = $(OBJ_DIR)/commands
+CMD_OBJ_DIR = obj/commands
 
 SRC = $(SRC_DIR)/main.cpp $(SRC_DIR)/Client.cpp $(SRC_DIR)/runServer.cpp $(SRC_DIR)/Server.cpp\
 		$(SRC_DIR)/handleMessage.cpp \
@@ -28,6 +29,9 @@ SRC = $(SRC_DIR)/main.cpp $(SRC_DIR)/Client.cpp $(SRC_DIR)/runServer.cpp $(SRC_D
 		$(CMD_DIR)/Quit.cpp
 
 OBJ = $(SRC:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
+
+# Find all header files in the 'inc' directory and add them to dependencies.
+HEADERS = $(wildcard $(INC_DIR)/*.hpp)
 
 .SILENT:
 
@@ -37,7 +41,7 @@ $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $^
 	echo "ircserv compiled"
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(HEADERS)
 	@mkdir -p $(OBJ_DIR) $(CMD_OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 

@@ -19,7 +19,7 @@
 #include <string>
 #include <sstream>
 #include <cstring>
-#include <signal.h>
+#include <csignal>
 
 const int BUFFER_SIZE = 1024;
 const int MAX_CLIENTS = 999;
@@ -42,9 +42,9 @@ class Server
 		void runServer();
 
 		// run server
-		int createServerSocket();
+		int  createServerSocket();
 		void bindAndListen(int server_fd);
-		void acceptConnection(int server_fd);
+		void acceptNewConnection(int server_fd);
 		void handleConnections(int server_fd);
 
 		// handleMessage for commands like
@@ -59,4 +59,7 @@ class Server
 		void Nick(Client &client, const std::string nickname);
 		void Cap(Client &client, const std::vector<std::string>& tokens);
 		void Quit(Client &client, std::string message);
+
+		// clean up
+		void cleanupResources(int server_fd);
 };

@@ -11,10 +11,7 @@
 /* **************************************************************************************** */
 
 #include "../inc/Server.hpp"
-#include <unordered_map>
-#include <functional>
-#include <sstream>
-#include <regex>
+
 void Server::sendToClient(Client client, const std::string &message)
 {
 	std::string response = "Server received your message: " + message + "\n";
@@ -33,7 +30,6 @@ std::vector<std::string> Server::split(const std::string &str)
 
     return (tokens);
 }
-
 
 void Server::handleClientMessage(Client &client, const std::string &message)
 {
