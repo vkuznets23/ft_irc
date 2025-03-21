@@ -62,9 +62,6 @@ std::string Client::getRealName() const { return(_realName); }
 void Client::setNick(std::string nick) { _nick = nick; }
 std::string Client::getNick() const { return(_nick); }
 
-void Client::setPassword(std::string password) { _password = password; }
-std::string Client::getPassword() const { return(_password); }
-
 void Client::setPasswdOK(bool ok) { _passwdOK = ok; }
 bool Client::getPasswdOK() { return(_passwdOK); }
 

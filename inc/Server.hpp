@@ -53,9 +53,10 @@ class Server
 		void handleClientMessage(Client &client, const std::string &message);
 
 		// commands
-		void Pass(Client &client, const std::vector<std::string> &tokens, size_t &i);
-		void UserName(Client &client, const std::vector<std::string> &tokens, size_t &i);
+		void Pass(Client &client, const std::string password);
+		void UserName(Client &client, const std::string username, const std::string realname);
 		bool isNickTaken(const std::string &nickname) const;
-		void Nick(Client &client, const std::string &nickname);
-		void Cap(Client &client, const std::vector<std::string>& tokens, int index);
+		void Nick(Client &client, const std::string nickname);
+		void Cap(Client &client, const std::vector<std::string>& tokens);
+		void Quit(Client &client, std::string message);
 };

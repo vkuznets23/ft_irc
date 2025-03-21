@@ -12,13 +12,19 @@
 
 #include "../../inc/Server.hpp"
 
-void Server::Cap(Client &client, const std::vector<std::string> &tokens)
+void Server::Quit(Client &client, std::string message)
 {
-    if (tokens.size() < 2)
-	{
-        sendToClient(client, "461 CAP :Not enough parameters");
-        return;
-    }
+	std::istringstream stream(message);
+	std::string command, reason;
+	stream >> command >> reason;
 
-    sendToClient(client, "CAP * LS :End of CAP negotiation");
+	std::string quitMessage = "Client has disconnected";
+	if (!reason.empty())
+	{
+		quitMessage = reason;
+		if (quitMessage[0] == ':')
+			quitMessage = quitMessage.substr(1);
+	}
+	//disconnectClient(client, quitMessage);
+	std::cout << "[" + client.getUserName() + "] Client " << client.getNick() << " has disconnected" << std::endl;
 }

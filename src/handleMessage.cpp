@@ -13,27 +13,27 @@
 #include "../inc/Server.hpp"
 #include <unordered_map>
 #include <functional>
-
+#include <sstream>
+#include <regex>
 void Server::sendToClient(Client client, const std::string &message)
 {
-	std::string response = "Server received your message: " + message;
+	std::string response = "Server received your message: " + message + "\n";
 	if (send(client.getFd(), response.c_str(), response.size(), 0) == -1)
 		perror("Error sending message to client.");
 }
 
 std::vector<std::string> Server::split(const std::string &str)
 {
-	std::vector<std::string> tokens;
-	std::string token;
-	std::istringstream tokenStream(str);
+    std::vector<std::string> tokens;
+    std::istringstream iss(str);
+    std::string token;
 
-	while (std::getline(tokenStream, token, ' '))
-	{
-		if (!token.empty())
-			tokens.push_back(token);
-	}
-	return (tokens);
+    while (iss >> token)
+        tokens.push_back(token);
+
+    return (tokens);
 }
+
 
 void Server::handleClientMessage(Client &client, const std::string &message)
 {
@@ -46,8 +46,6 @@ void Server::handleClientMessage(Client &client, const std::string &message)
 		return;
 	}
 
-	std::unordered_map<std::string, std::function<void()>> commands;
-
 	if (client.getState() == REGISTERING)
 	{
 		std::cout << "[DEBUG] Client is registering..." << std::endl;
@@ -57,40 +55,39 @@ void Server::handleClientMessage(Client &client, const std::string &message)
 			sendToClient(client, "461 PASS :Not enough parameters");
 			return;
 		}
-		for (size_t i = 0; i < tokens.size(); ++i)
+		for (size_t i = 0; i < tokens.size(); i++)
 		{
-			//if (tokens[i] == "CAP")
-			//	commands["CAP"] = [&]() { Cap(client, tokens, i); };
-			if (tokens[i] == "PASS")
-				commands["PASS"] = [&]() { Pass(client, tokens, i); };
-			else if (tokens[i] == "USER")
-				commands["USER"] = [&]() { UserName(client, tokens, i); };
+			if (tokens[i] == "CAP")
+				Cap(client, tokens);
+			else if (tokens[i] == "PASS" && i + 1 < tokens.size())
+				Pass(client, tokens[i + 1]);
+			else if (tokens[i] == "USER" && i + 4 < tokens.size())
+				UserName(client,  tokens[i + 1],  tokens[i + 4]);
 			else if (tokens[i] == "NICK" && i + 1 < tokens.size())
-				commands["NICK"] = [&]() { Nick(client, tokens[i + 1]); };
+				Nick(client, tokens[i + 1]);
 		}
-		client.setState(REGISTERED);
-	}	
-	else
+		if (client.getUserNameOK() && client.getNickOK() && client.getPasswdOK())
+		{
+			std::cout << "[DEBUG] All registration conditions met, transitioning to REGISTERED." << std::endl;
+    		client.setState(REGISTERED);
+			sendToClient(client, "001 :Welcome to the IRC server, " + client.getUserName());
+		}	
+	}
+	if (client.getState() == REGISTERED)
 	{
 		std::cout << "[DEBUG] Client already registered." << std::endl;
 
-		commands["PING"] = [&]()
+		if (tokens[0] == "PING")
 		{ 
 			std::string arg;
 			std::istringstream iss(message);
 			iss >> arg;
 			iss >> arg;
 			sendToClient(client, "PONG " + arg);
-		};
+		}
 
-		commands["NICK"] = [&]()
-		{ 
-			std::string nickname;
-			std::istringstream iss(message);
-			iss >> nickname; // NICK
-			iss >> nickname; // Nouveau pseudo
-			Nick(client, nickname);
-		};
+		else if (tokens[0] == "NICK" && tokens.size() > 1)
+            Nick(client, tokens[1]);
 
 		// commands["JOIN"] = [&]() { 
 		// 	std::string channel, password;
@@ -130,16 +127,7 @@ void Server::handleClientMessage(Client &client, const std::string &message)
 
 		// commands["KICK"] = [&]() { Kick(client, message); };
 		// commands["INVITE"] = [&]() { Invite(client, message); };
-		// commands["QUIT"] = [&]() { Quit(client, message); };
-	}
-
-	auto it = commands.find(tokens[0]);
-	if (it != commands.end()) 
-	{
-		it->second();
-	}
-	else 
-	{
-		std::cerr << "[DEBUG] Unknown command: " << tokens[0] << std::endl;
+		else if (tokens[0] == "QUIT")
+			Quit(client, message);
 	}
 }

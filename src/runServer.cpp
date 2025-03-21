@@ -72,19 +72,19 @@ void Server::bindAndListen(int server_fd)
 
 void Server::acceptConnection(int server_fd)
 {
-    sockaddr_in client_addr = {};
-    socklen_t client_addr_len = sizeof(client_addr);
-    int client_fd = accept(server_fd, (struct sockaddr *)&client_addr, &client_addr_len);
-    if (client_fd < 0)
-    {
-        perror("accept");
-        close(server_fd);
-        return;
-    }
+	sockaddr_in client_addr = {};
+	socklen_t client_addr_len = sizeof(client_addr);
+	int client_fd = accept(server_fd, (struct sockaddr *)&client_addr, &client_addr_len);
+	if (client_fd < 0)
+	{
+		perror("accept");
+		close(server_fd);
+		return;
+	}
 
-    std::cout << "Client connected" << std::endl;
-    _clients.push_back(new Client(client_fd, client_addr));
-    _clients.back()->setState(REGISTERING);
+	std::cout << "Client connected" << std::endl;
+	_clients.push_back(new Client(client_fd, client_addr));
+	_clients.back()->setState(REGISTERING);
 }
 
 void Server::handleConnections(int server_fd)

@@ -22,7 +22,7 @@ bool Server::isNickTaken(const std::string &nickname) const
 	return (false);
 }
 
-void Server::Nick(Client &client, const std::string &nickname)
+void Server::Nick(Client &client, const std::string nickname)
 {
 	if (nickname.empty()) 
 	{

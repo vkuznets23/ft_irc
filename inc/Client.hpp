@@ -31,7 +31,6 @@ class Client
 		std::string	_nick;
 		std::string	_userName;
 		std::string	_realName;
-		std::string _password;
 		bool		_passwdOK;
 		bool		_nickOK;
 		bool		_userNameOK;
@@ -59,10 +58,7 @@ class Client
 
 		void setNick(std::string nick);
 		std::string getNick() const;
-
-		void setPassword(std::string password);
-		std::string getPassword() const;
-
+		
 		void setPasswdOK(bool ok);
 		bool getPasswdOK();
 
