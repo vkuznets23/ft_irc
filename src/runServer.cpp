@@ -10,12 +10,48 @@
 /*                                                                                          */
 /* **************************************************************************************** */
 
-#include "Server.hpp"
+#include "../inc/Server.hpp"
 #include <sys/socket.h>
 #include <poll.h>
 #include <system_error>
 #include <unistd.h>
 #include <cstring>
+
+// signals handling
+
+volatile sig_atomic_t serverIsRunning = 1;
+
+void handle_sig(int signum)
+{
+    switch (signum)
+    {
+    case SIGSEGV:
+        std::cerr << "Segmentation fault occurred! Exiting." << std::endl;
+        break;
+    case SIGINT:
+    case SIGTERM:
+    case SIGQUIT:
+        std::cout << "\nShutting down server..." << std::endl;
+        break;
+    default:
+        return;
+    }
+    serverIsRunning = 0;
+}
+
+void setupSignalHandlers()
+{
+    struct sigaction sa;
+    sa.sa_handler = handle_sig;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+
+    int signals[] = {SIGINT, SIGTERM, SIGQUIT, SIGSEGV};
+    for (int sig : signals)
+    {
+        sigaction(sig, &sa, nullptr);
+    }
+}
 
 // Socket Creation socket()-> Binding bind() -> Listening listen() -> Accepting Connections accept() -> Reading data read()
 
@@ -71,11 +107,12 @@ void Server::bindAndListen(int server_fd)
     std::cout << "Server is listening on port " << _port << "..." << std::endl;
 }
 
-void Server::acceptConnection(int server_fd)
+void Server::acceptNewConnection(int server_fd)
 {
     sockaddr_in client_addr = {};
     socklen_t client_addr_len = sizeof(client_addr);
     int client_fd = accept(server_fd, (struct sockaddr *)&client_addr, &client_addr_len);
+
     if (client_fd < 0)
     {
         perror("accept");
@@ -91,9 +128,9 @@ void Server::acceptConnection(int server_fd)
 void Server::handleConnections(int server_fd)
 {
     std::vector<struct pollfd> fds;
-    while (true) // here we should have smth else cos signals might stop running server i assume
-    {
 
+    while (serverIsRunning)
+    {
         fds.clear();
         fds.push_back({server_fd, POLLIN, 0}); // Monitor the server socket for new connections
 
@@ -104,20 +141,23 @@ void Server::handleConnections(int server_fd)
         int poll_result = poll(fds.data(), fds.size(), -1);
         if (poll_result == -1)
         {
+            if (errno == EINTR)
+            {
+                if (!serverIsRunning) // not sure about this one
+                    break;
+                continue;
+            }
             perror("Poll failed");
             break;
         }
-
-        // i need to connect a new one and check existing ones
 
         // Check if there are incoming connections on the server socket
         // @POLLIN flag shows that there is data in the socket
         if (fds[0].revents & POLLIN)
         {
-            acceptConnection(server_fd);
+            acceptNewConnection(server_fd);
         }
 
-        // server socket is always 0
         for (size_t i = 1; i < fds.size(); ++i)
         {
             if (fds[i].revents & POLLIN)
@@ -126,12 +166,11 @@ void Server::handleConnections(int server_fd)
                 ssize_t bytes_read = recv(fds[i].fd, buffer, sizeof(buffer) - 1, 0);
                 if (bytes_read <= 0)
                 {
-                    perror("recv failed");
-                    close(fds[i].fd); // disconnect client
-                    auto it = _clients.begin() + i - 1;
-                    delete *it;
-                    _clients.erase(it); // delete from the list
                     std::cout << "Client disconnected" << std::endl;
+                    close(fds[i].fd); // disconnect client
+                    // auto it = _clients.begin() + i - 1;
+                    // delete *it;
+                    // _clients.erase(it); // delete from the list
                 }
                 else
                 {
@@ -149,9 +188,25 @@ void Server::handleConnections(int server_fd)
     }
 }
 
+void Server::cleanupResources(int server_fd)
+{
+    for (auto &client : _clients)
+    {
+        close(client->getFd());
+        delete client;
+    }
+    _clients.clear();
+    close(server_fd);
+}
+
 void Server::runServer()
 {
+    setupSignalHandlers();
+
     int server_fd = createServerSocket();
     bindAndListen(server_fd);
     handleConnections(server_fd);
+
+    // clean up
+    cleanupResources(server_fd);
 }

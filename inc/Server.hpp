@@ -17,6 +17,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <csignal>
 
 const int BUFFER_SIZE = 1024;
 const int MAX_CLIENTS = 999;
@@ -36,11 +37,15 @@ public:
     // run server
     int createServerSocket();
     void bindAndListen(int server_fd);
-    void acceptConnection(int server_fd);
+    void acceptNewConnection(int server_fd);
+    void processPollResult(const std::vector<struct pollfd> &fds);
     void handleConnections(int server_fd);
 
     // handleMessage for commands like
     void handleClientMessage(Client &client, const std::string &message);
+
+    // clean up
+    void cleanupResources(int server_fd);
 
 private:
     int _port;
