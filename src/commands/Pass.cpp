@@ -12,7 +12,7 @@
 
 #include "../../inc/Server.hpp"
 
-void Server::Pass(Client &client, const std::string password)
+void Server::Pass(Client &client, const std::string &password)
 {
 	if (password != _password)
 	{

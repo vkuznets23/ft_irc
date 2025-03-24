@@ -14,11 +14,11 @@
 
 void Server::Cap(Client &client, const std::vector<std::string> &tokens)
 {
-    if (tokens.size() < 2)
+	if (tokens.size() < 2)
 	{
-        sendToClient(client, "461 CAP :Not enough parameters");
-        return;
-    }
+		sendToClient(client, "461 CAP :Not enough parameters");
+		return;
+	}
 
-    sendToClient(client, "CAP * LS :End of CAP negotiation");
+	sendToClient(client, "CAP * LS :End of CAP negotiation");
 }

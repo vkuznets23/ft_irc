@@ -12,7 +12,7 @@
 
 #include "../../inc/Server.hpp"
 
-void Server::UserName(Client &client, const std::string username, const std::string realname)
+void Server::UserName(Client &client, const std::string &username, const std::string &realname)
 {
 
 	client.setUserName(username);

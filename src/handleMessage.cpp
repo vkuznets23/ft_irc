@@ -14,7 +14,7 @@
 
 void Server::sendToClient(Client client, const std::string &message)
 {
-	std::string response = "Server received your message: " + message + "\n";
+	std::string response = "Server received your message: " + message + "\r\n";
 	if (send(client.getFd(), response.c_str(), response.size(), 0) == -1)
 		perror("Error sending message to client.");
 	else
@@ -35,31 +35,25 @@ std::vector<std::string> Server::split(const std::string &str)
 
 void Server::handleClientMessage(Client &client, const std::string &message)
 {
-	std::cout << "Received message: " << message << std::endl;
-
-	std::vector<std::string> tokens = split(message);
-	if (tokens.empty())
-	{
-		std::cerr << "Received an empty message" << std::endl;
-		return;
-	}
+	std::cout << "Received message: " << message << std::endl;  // Message de débogage
 
 	if (client.getState() == REGISTERING)
 	{
 		std::cout << "[DEBUG] Client is registering..." << std::endl;
 
+		std::vector<std::string> tokens = split(message);
 		if (tokens.size() < 2)
 		{
-			sendToClient(client, "461 PASS :Not enough parameters");
+			sendToClient(client, "Error");
 			return;
 		}
-		for (size_t i = 0; i < tokens.size(); i++)
+		for (size_t i = 0; i < tokens.size(); ++i)
 		{
 			if (tokens[i] == "CAP")
 				Cap(client, tokens);
 			else if (tokens[i] == "PASS" && i + 1 < tokens.size())
 				Pass(client, tokens[i + 1]);
-			else if (tokens[i] == "USER" && i + 1 < tokens.size())
+			else if (tokens[i] == "USER" && i + 4 < tokens.size())
 				UserName(client, tokens[i + 1], tokens[i + 4]);
 			else if (tokens[i] == "NICK" && i + 1 < tokens.size())
 				Nick(client, tokens[i + 1]);
@@ -70,69 +64,28 @@ void Server::handleClientMessage(Client &client, const std::string &message)
 			client.setState(REGISTERED);
 			sendToClient(client, "001 :Welcome to the IRC server, " + client.getUserName());
 		}
-		else
-		{
-			std::cout << "[DEBUG] Registration not complete: "
-					  << "NickOK=" << client.getNickOK()
-					  << ", UserNameOK=" << client.getUserNameOK()
-					  << ", PasswdOK=" << client.getPasswdOK() << std::endl;
-		}
 	}
-	if (client.getState() == REGISTERED)
+	else
 	{
 		std::cout << "[DEBUG] Client already registered." << std::endl;
 
-		if (tokens[0] == "PING")
+		std::string arg[3];
+		std::istringstream iss(message);
+		iss >> arg[0];
+
+		std::cout << "[DEBUG] Command received: " << arg[0] << std::endl;
+
+		if (arg[0] == "PING")
 		{
-			std::string arg;
-			std::istringstream iss(message);
-			iss >> arg;
-			iss >> arg;
-			sendToClient(client, "PONG " + arg);
+			iss >> arg[1];
+			sendToClient(client, "PONG " + arg[1]);
 		}
-
-		else if (tokens[0] == "NICK" && tokens.size() > 1)
-			Nick(client, tokens[1]);
-
-		// commands["JOIN"] = [&]() {
-		// 	std::string channel, password;
-		// 	std::istringstream iss(message);
-		// 	iss >> channel; // JOIN
-		// 	iss >> channel; // #channel
-		// 	iss >> password; // password (optionnel)
-		// 	Join(client, channel, password);
-		// };
-
-		// commands["PRIVMSG"] = [&]() {
-		// 	std::string target, msg;
-		// 	std::istringstream iss(message);
-		// 	iss >> target; // PRIVMSG
-		// 	iss >> target; // Destinataire (#channel ou pseudo)
-		// 	std::getline(iss, msg); // Message
-		// 	Privmsg(client, target, msg);
-		// };
-
-		// commands["MODE"] = [&]() {
-		// 	std::string target, mode;
-		// 	std::istringstream iss(message);
-		// 	iss >> target; // MODE
-		// 	iss >> target; // Target
-		// 	std::getline(iss, mode); // Mode
-		// 	Mode(client, target, mode);
-		// };
-
-		// commands["TOPIC"] = [&]() {
-		// 	std::string channel, topic;
-		// 	std::istringstream iss(message);
-		// 	iss >> channel; // TOPIC
-		// 	iss >> channel; // Channel
-		// 	std::getline(iss, topic); // Nouveau topic
-		// 	Topic(client, channel, topic);
-		// };
-
-		// commands["KICK"] = [&]() { Kick(client, message); };
-		// commands["INVITE"] = [&]() { Invite(client, message); };
-		else if (tokens[0] == "QUIT")
+		else if (arg[0] == "NICK")
+		{
+			iss >> arg[1];
+			Nick(client, arg[1]);
+		}
+		else if (arg[0] == "QUIT")
 			Quit(client, message);
 	}
 }
