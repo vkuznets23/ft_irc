@@ -26,7 +26,7 @@ CMD_OBJ_DIR = obj/commands
 SRC = $(SRC_DIR)/main.cpp $(SRC_DIR)/Client.cpp $(SRC_DIR)/runServer.cpp $(SRC_DIR)/Server.cpp\
 		$(SRC_DIR)/handleMessage.cpp \
 		$(CMD_DIR)/Pass.cpp $(CMD_DIR)/Nick.cpp $(CMD_DIR)/UserName.cpp $(CMD_DIR)/Cap.cpp\
-		$(CMD_DIR)/Quit.cpp
+		$(CMD_DIR)/Quit.cpp 
 
 OBJ = $(SRC:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 

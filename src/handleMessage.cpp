@@ -17,18 +17,20 @@ void Server::sendToClient(Client client, const std::string &message)
 	std::string response = "Server received your message: " + message + "\n";
 	if (send(client.getFd(), response.c_str(), response.size(), 0) == -1)
 		perror("Error sending message to client.");
+	else
+		std::cout << "[DEBUG] Sent to client: " << message << std::endl;
 }
 
 std::vector<std::string> Server::split(const std::string &str)
 {
-    std::vector<std::string> tokens;
-    std::istringstream iss(str);
-    std::string token;
+	std::vector<std::string> tokens;
+	std::istringstream iss(str);
+	std::string token;
 
-    while (iss >> token)
-        tokens.push_back(token);
+	while (iss >> token)
+		tokens.push_back(token);
 
-    return (tokens);
+	return (tokens);
 }
 
 void Server::handleClientMessage(Client &client, const std::string &message)
@@ -36,7 +38,7 @@ void Server::handleClientMessage(Client &client, const std::string &message)
 	std::cout << "Received message: " << message << std::endl;
 
 	std::vector<std::string> tokens = split(message);
-	if (tokens.empty()) 
+	if (tokens.empty())
 	{
 		std::cerr << "Received an empty message" << std::endl;
 		return;
@@ -45,7 +47,7 @@ void Server::handleClientMessage(Client &client, const std::string &message)
 	if (client.getState() == REGISTERING)
 	{
 		std::cout << "[DEBUG] Client is registering..." << std::endl;
-	
+
 		if (tokens.size() < 2)
 		{
 			sendToClient(client, "461 PASS :Not enough parameters");
@@ -57,24 +59,31 @@ void Server::handleClientMessage(Client &client, const std::string &message)
 				Cap(client, tokens);
 			else if (tokens[i] == "PASS" && i + 1 < tokens.size())
 				Pass(client, tokens[i + 1]);
-			else if (tokens[i] == "USER" && i + 4 < tokens.size())
-				UserName(client,  tokens[i + 1],  tokens[i + 4]);
+			else if (tokens[i] == "USER" && i + 1 < tokens.size())
+				UserName(client, tokens[i + 1], tokens[i + 4]);
 			else if (tokens[i] == "NICK" && i + 1 < tokens.size())
 				Nick(client, tokens[i + 1]);
 		}
 		if (client.getUserNameOK() && client.getNickOK() && client.getPasswdOK())
 		{
 			std::cout << "[DEBUG] All registration conditions met, transitioning to REGISTERED." << std::endl;
-    		client.setState(REGISTERED);
+			client.setState(REGISTERED);
 			sendToClient(client, "001 :Welcome to the IRC server, " + client.getUserName());
-		}	
+		}
+		else
+		{
+			std::cout << "[DEBUG] Registration not complete: "
+					  << "NickOK=" << client.getNickOK()
+					  << ", UserNameOK=" << client.getUserNameOK()
+					  << ", PasswdOK=" << client.getPasswdOK() << std::endl;
+		}
 	}
 	if (client.getState() == REGISTERED)
 	{
 		std::cout << "[DEBUG] Client already registered." << std::endl;
 
 		if (tokens[0] == "PING")
-		{ 
+		{
 			std::string arg;
 			std::istringstream iss(message);
 			iss >> arg;
@@ -83,9 +92,9 @@ void Server::handleClientMessage(Client &client, const std::string &message)
 		}
 
 		else if (tokens[0] == "NICK" && tokens.size() > 1)
-            Nick(client, tokens[1]);
+			Nick(client, tokens[1]);
 
-		// commands["JOIN"] = [&]() { 
+		// commands["JOIN"] = [&]() {
 		// 	std::string channel, password;
 		// 	std::istringstream iss(message);
 		// 	iss >> channel; // JOIN
@@ -94,7 +103,7 @@ void Server::handleClientMessage(Client &client, const std::string &message)
 		// 	Join(client, channel, password);
 		// };
 
-		// commands["PRIVMSG"] = [&]() { 
+		// commands["PRIVMSG"] = [&]() {
 		// 	std::string target, msg;
 		// 	std::istringstream iss(message);
 		// 	iss >> target; // PRIVMSG
@@ -103,7 +112,7 @@ void Server::handleClientMessage(Client &client, const std::string &message)
 		// 	Privmsg(client, target, msg);
 		// };
 
-		// commands["MODE"] = [&]() { 
+		// commands["MODE"] = [&]() {
 		// 	std::string target, mode;
 		// 	std::istringstream iss(message);
 		// 	iss >> target; // MODE
@@ -112,7 +121,7 @@ void Server::handleClientMessage(Client &client, const std::string &message)
 		// 	Mode(client, target, mode);
 		// };
 
-		// commands["TOPIC"] = [&]() { 
+		// commands["TOPIC"] = [&]() {
 		// 	std::string channel, topic;
 		// 	std::istringstream iss(message);
 		// 	iss >> channel; // TOPIC
