@@ -11,34 +11,49 @@
 /* **************************************************************************************** */
 
 #include "../../inc/Server.hpp"
+#include "../../inc/Channel.hpp"
+
+/**
+ * The Quit function handles the QUIT command from a client. 
+ * When a client sends a QUIT message, it can include a quit message, 
+ * and the client will be removed from the server's client list. 
+ * If no message is provided, the default message "Client left" is sent.
+ * The client's channels are cleaned up, and the client is disconnected from the server.
+ */
 
 void Server::Quit(Client &client, std::string message)
 {
-    std::istringstream stream(message);
-    std::string command, reason;
-    stream >> command >> reason;
+	if (client.getState() == DISCONNECTED)
+	{
+		std::cerr << "Client " << client.getNick() << " is already disconnected." << std::endl;
+		return;
+	}
 
-    std::string quitMessage = "Client has disconnected";
-    if (!reason.empty())
-    {
-        quitMessage = reason;
-        if (quitMessage[0] == ':')
-            quitMessage = quitMessage.substr(1);
-    }
+	if (message.empty())
+	{
+		message = "Client has disconnected.";
+	}
 
-    std::cout << "[" + client.getUserName() + "] Client " << client.getNick() << " has disconnected: " << quitMessage << std::endl;
+	for (Channel *channel : client.getJoinedChannels())
+	{
+		for (Client *member : channel->getClients())
+		{
+			if (member != &client)
+			{
+				sendToClient(*member, client.getNick() + " has left the channel: " + message);
+			}
+		}
+		channel->removeClient(&client);
+	}
 
-    // Fermer le socket du client
-    close(client.getFd());
+	close(client.getFd());
+	std::cout << "Client " << client.getNick() << " has disconnected." << std::endl;
 
-    // Supprimer le client de la liste des clients
-    for (auto it = _clients.begin(); it != _clients.end(); ++it)
-    {
-        if (*it == &client)
-        {
-            _clients.erase(it);
-            delete &client;
-            break;
-        }
-    }
+	client.setState(DISCONNECTED);
+
+	auto it = std::find(_clients.begin(), _clients.end(), &client);
+	if (it != _clients.end())
+		_clients.erase(it);
+
+	sendToClient(client, "Goodbye " + client.getNick() + "!");
 }

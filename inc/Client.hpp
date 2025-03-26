@@ -14,6 +14,11 @@
 
 #include <string>
 #include <netinet/in.h>
+#include <algorithm>
+#include <vector>
+#include "Channel.hpp"
+
+class Channel;
 
 enum clientState
 {
@@ -34,6 +39,7 @@ class Client
 		bool		_passwdOK;
 		bool		_nickOK;
 		bool		_userNameOK;
+		std::vector<Channel *> _joinedChannels;
 
 	public:
 		// constructors
@@ -67,4 +73,7 @@ class Client
 
 		void setUserNameOK(bool ok);
 		bool getUserNameOK();
+
+		void joinChannel(Channel *channel);
+		std::vector<Channel *> getJoinedChannels() const;
 };

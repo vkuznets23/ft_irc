@@ -11,6 +11,7 @@
 /* **************************************************************************************** */
 
 #include "../inc/Client.hpp"
+#include "../inc/Channel.hpp"
 
 Client::Client() {}
 
@@ -70,3 +71,5 @@ bool Client::getNickOK() {return(_nickOK); }
 
 void Client::setUserNameOK(bool ok) { _userNameOK = ok; }
 bool Client::getUserNameOK() {return(_userNameOK); }
+
+std::vector<Channel *> Client::getJoinedChannels() const { return _joinedChannels;}

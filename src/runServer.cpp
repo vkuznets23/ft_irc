@@ -173,7 +173,6 @@ void Server::runServer()
 
 		for (size_t i = 1; i < fds.size(); ++i)
 		{
-			std::cout << "lu ? " << std::endl;
 			if (fds[i].revents & POLLIN)
 			{
 				char buffer[BUFFER_SIZE];
@@ -181,18 +180,14 @@ void Server::runServer()
 				if (bytes_read <= 0)
 				{
 					std::cout << "Client disconnected" << std::endl;
-					close(fds[i].fd); // disconnect client
+					close(fds[i].fd);
 					_clients.erase(_clients.begin() + i - 1);
 				}
 				else
 				{
 					buffer[bytes_read] = '\0';
 					std::string message(buffer);
-					std::cout << "[DEBUG] Received message from client: " << message << std::endl; 
-
-					std::cout << "[DEBUG] Client state: " << _clients[i - 1]->getState() << std::endl;
 					handleClientMessage(*_clients[i - 1], message);
-					std::cout << "[DEBUG] Client state after processing: " << _clients[i - 1]->getState() << std::endl;
 			}
 			}
 		}

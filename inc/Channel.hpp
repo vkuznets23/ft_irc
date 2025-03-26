@@ -59,8 +59,12 @@ public:
     void setUserLimit(int limit);
     void setTopic(Client *client, const std::string &topic);
     std::string getTopic() const;
+	bool isTopicRestricted() const;
+	std::vector<Client*> getClients() const;
 
     // chanel modes
     void setChannelType(ChannelType type);
     ChannelType getChannelType() const;
+
+	bool isOperator(Client *client) const;
 };

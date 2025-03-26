@@ -35,7 +35,7 @@ std::vector<std::string> Server::split(const std::string &str)
 
 void Server::handleClientMessage(Client &client, const std::string &message)
 {
-	std::cout << "Received message: " << message << std::endl;  // Message de débogage
+	std::cout << "Received message: " << message << std::endl;
 
 	if (client.getState() == REGISTERING)
 	{
