@@ -53,7 +53,6 @@ void setupSignalHandlers()
 }
 
 // Socket Creation socket()-> Binding bind() -> Listening listen() -> Accepting Connections accept() -> Reading data read()
-
 int Server::createServerSocket()
 {
 	// create a socket IPv4 according to TCP protocol, 0 is by default
@@ -74,7 +73,6 @@ int Server::createServerSocket()
 		close(server_fd);
 		throw std::system_error(errno, std::generic_category(), "setsockopt failed: Unable to set SO_REUSEADDR");
 	}
-
 	return server_fd;
 }
 

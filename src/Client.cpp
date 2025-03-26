@@ -12,11 +12,24 @@
 
 #include "../inc/Client.hpp"
 #include "../inc/Channel.hpp"
+#include <arpa/inet.h>
 
 Client::Client() {}
 
 Client::Client(int fd, const sockaddr_in &client_addr)
-	: _fd(fd), _addr(client_addr), _nick("*"), _userName(""), _passwdOK(false), _nickOK(false), _userNameOK(false) {}
+	: _fd(fd), _addr(client_addr), _nick("*"), _userName(""), _passwdOK(false), _nickOK(false), _userNameOK(false)
+{
+	struct sockaddr_in addr;
+	socklen_t addr_len = sizeof(addr);
+	if (getpeername(fd, (struct sockaddr*)&addr, &addr_len) == 0)
+	{
+		_host = inet_ntoa(addr.sin_addr);
+	}
+	else
+	{
+		_host = "unknown";
+	}
+}
 
 Client::Client(const Client &other)
 {
@@ -71,5 +84,8 @@ bool Client::getNickOK() {return(_nickOK); }
 
 void Client::setUserNameOK(bool ok) { _userNameOK = ok; }
 bool Client::getUserNameOK() {return(_userNameOK); }
+
+
+std::string Client::getHostName() const { return(_host); }
 
 std::vector<Channel *> Client::getJoinedChannels() const { return _joinedChannels;}

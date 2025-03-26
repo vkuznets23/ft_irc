@@ -36,6 +36,7 @@ class Client
 		std::string	_nick;
 		std::string	_userName;
 		std::string	_realName;
+		std::string	_host;
 		bool		_passwdOK;
 		bool		_nickOK;
 		bool		_userNameOK;
@@ -74,6 +75,10 @@ class Client
 		void setUserNameOK(bool ok);
 		bool getUserNameOK();
 
+
+		std::string getHostName() const;
+
 		void joinChannel(Channel *channel);
 		std::vector<Channel *> getJoinedChannels() const;
+
 };

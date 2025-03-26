@@ -11,6 +11,7 @@
 /* **************************************************************************************** */
 
 #include "../../inc/Server.hpp"
+#include "../../inc/Message.hpp"
 
 bool Server::isNickTaken(const std::string &nickname) const
 {
@@ -26,17 +27,17 @@ void Server::Nick(Client &client, const std::string &nickname)
 {
 	if (nickname.empty()) 
 	{
-		sendToClient(client, "431 ERR_NONICKNAMEGIVEN :No nickname given");
+		sendToClient(client, ERR_NONICKNAMEGIVEN(nickname));
 		return;
 	}
 
 	if (isNickTaken(nickname))
 	{
-		sendToClient(client, "433 ERR_NICKNAMEINUSE " + nickname + " :Nickname is already in use");
+		sendToClient(client, ERR_NICKNAMEINUSE(client.getNick(), nickname));
 		return;
 	}
 
+	sendToClient(client, RPL_NICKCHANGE(client.getNick(), client.getUserName(), client.getHostName(), nickname));
 	client.setNick(nickname);
 	client.setNickOK(true);
-	sendToClient(client, "NICK " + nickname);
 }
