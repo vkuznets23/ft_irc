@@ -43,7 +43,7 @@ std::string Channel::getChannelPassword() const { return _channelPassword.empty(
 void Channel::setChannelPassword(const std::string &password) { _channelPassword = password; }
 
 /******************************** CLIENT METHODS ********************************/
-void Channel::addClient(Client *client) { _userList.push_back(client); }
+void Channel::addClient(Client &client) { _userList.push_back(&client); }
 
 void Channel::removeClient(Client *client)
 {
@@ -87,3 +87,20 @@ void Channel::setTopic(Client *client, const std::string &topic)
 /******************************** CHANNEL TYPES ********************************/
 void Channel::setChannelType(ChannelType type) { _type = type; }
 ChannelType Channel::getChannelType() const { return _type; }
+
+/******************************** TIMESTAMP ********************************/
+
+void Channel::setTimestamp()
+{
+	std::time_t now = std::time(nullptr);
+	_timestamp = std::asctime(std::localtime(&now));
+}
+
+std::string Channel::getTimestamp() const { return _timestamp; }
+
+/******************************** OPERATOR ********************************/
+
+void	Channel::setOperator(Client* client) { operatorClient = client; }
+Client*	Channel::getOperator() const { return operatorClient; }
+
+bool Channel::isOperator(Client *client) const { return std::find(_operatorList.begin(), _operatorList.end(), client) != _operatorList.end(); }

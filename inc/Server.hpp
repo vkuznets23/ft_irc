@@ -25,7 +25,6 @@
 
 const int BUFFER_SIZE = 1024;
 const int MAX_CLIENTS = 999;
-const std::string SERVERNAME = "ircserv";
 
 class Server
 {
@@ -60,9 +59,11 @@ public:
 	void UserName(Client &client, const std::string &username, const std::string &realname);
 	bool isNickTaken(const std::string &nickname) const;
 	void Nick(Client &client, const std::string &nickname);
-	void Quit(Client &client);
-	void Join(Client *client, const std::string &channelName, const std::string &password);
+	void Quit(Client &client, std::string message);
+	bool checkChannelType(Client &client, Channel &channel, const std::string &channelName, const std::string &password);
+	void Join(Client &client, std::string &channels, std::string &password);
 	void Topic(Client &client, const std::string &channelName, const std::string &newTopic);
+	void Part(Client &client, const std::string &channelName);
 
 	// clean up
 	void cleanupResources(int server_fd);

@@ -15,6 +15,7 @@
 #include "Client.hpp"
 #include <vector>
 #include <iostream>
+#include <ctime>
 
 class Client;
 
@@ -29,14 +30,16 @@ enum ChannelType
 class Channel
 {
 private:
-    std::string _channelName;
-    std::string _channelPassword;
-    int _userLimit;
-    std::string _topic;
-    bool _topicOperatorsOnly;
-    std::vector<Client *> _userList;
-    std::vector<Client *> _operatorList;
-    ChannelType _type;
+    std::string				_channelName;
+    std::string				_channelPassword;
+    int						_userLimit;
+    std::string				_topic;
+    bool					_topicOperatorsOnly;
+    std::vector<Client *>	_userList;
+    std::vector<Client *>	_operatorList;
+    ChannelType				_type;
+	std::string				_timestamp;
+	Client*					operatorClient = nullptr;
 
 public:
     // Constructors
@@ -51,7 +54,7 @@ public:
     std::string getChannelPassword() const;
 
     // client methods
-    void					addClient(Client *client);
+    void					addClient(Client &client);
     void					removeClient(Client *client);
     bool					isClientInChannel(Client *client);
     void					setChannelPassword(const std::string &password);
@@ -66,5 +69,10 @@ public:
     void		setChannelType(ChannelType type);
     ChannelType getChannelType() const;
 
-	bool isOperator(Client *client) const;
+	void 		setTimestamp();
+	std::string getTimestamp() const;
+
+	void	setOperator(Client* client);
+	Client*	getOperator() const;
+	bool	isOperator(Client *client) const;
 };

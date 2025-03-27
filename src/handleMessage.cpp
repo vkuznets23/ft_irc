@@ -64,6 +64,7 @@ void Server::handleClientMessage(Client &client, const std::string &message)
 		{
 			client.setState(REGISTERED);
 			sendToClient(client, RPL_WELCOME(client.getNick(), client.getUserName(), client.getHostName()));
+			sendToClient(client, RPL_AVAILABLECMD(client.getNick()));
 		}
 	}
 	else
@@ -91,7 +92,7 @@ void Server::handleClientMessage(Client &client, const std::string &message)
 			{
 				std::string channelName, password;
 				iss >> channelName >> password;
-				Join(&c, channelName, password);
+				Join(c, channelName, password);
 			}},
 			{"TOPIC", [this](Client &c, std::istringstream &iss)
 			{
@@ -100,10 +101,16 @@ void Server::handleClientMessage(Client &client, const std::string &message)
 				std::getline(iss, newTopic);
 				Topic(c, channelName, newTopic);
 			}},
-			{"QUIT", [this](Client &c, std::istringstream &iss)
+			{"PART", [this](Client &c, std::istringstream &iss)
+			{
+				std::string arg1;
+				iss >> arg1;
+				Part(c, arg1);
+			}},
+			{"QUIT", [this, &message](Client &c, std::istringstream &iss)
 			{
 				(void)iss;
-				Quit(c);
+				Quit(c, message);
 			}}
 		};
 

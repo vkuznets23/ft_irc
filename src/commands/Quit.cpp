@@ -24,9 +24,11 @@
  * while iterating over it by making a copy beforehand.
  */
 
-void Server::Quit(Client &client)
+void Server::Quit(Client &client, std::string message)
 {
 	std::vector<Channel *> joinedChannels = client.getJoinedChannels();
+
+	sendToClient(client, RPL_QUIT(client.getNick(), client.getUserName(), client.getHostName(), message));
 
 	for (Channel *channel : joinedChannels)
 	{
@@ -40,6 +42,4 @@ void Server::Quit(Client &client)
 			}
 		}
 	}
-
-	std::cout << "Client " << client.getNick() << " removed from all channels." << std::endl;
 }

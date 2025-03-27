@@ -15,53 +15,112 @@
 #include "../../inc/Channel.hpp"
 #include "../../inc/Message.hpp"
 
-void Client::joinChannel(Channel *channel)
+bool Server::checkChannelType(Client &client, Channel &channel, const std::string &channelName, const std::string &password)
 {
-    if (channel == nullptr)
-        return;
-
-    if (std::find(_joinedChannels.begin(), _joinedChannels.end(), channel) == _joinedChannels.end())
+    if (channel.getChannelType() == INVITE_ONLY && !channel.isOperator(&client))
     {
-        _joinedChannels.push_back(channel);
+        sendToClient(client, ERR_INVITEONLYCHAN(client.getNick(), channelName));
+        return false;
     }
+
+    if (channel.getChannelType() == PRIVATE && !channel.isClientInChannel(&client))
+    {
+        sendToClient(client, ERR_BANNEDFROMCHAN(client.getNick(), channelName));
+        return false;
+    }
+
+    if (channel.getChannelType() == MODERATED && !channel.isOperator(&client))
+    {
+        sendToClient(client, ERR_INVITEONLYCHAN(client.getNick(), channelName));
+        return false;
+    }
+
+    if (!channel.getChannelPassword().empty() && channel.getChannelPassword() != password)
+    {
+        sendToClient(client, ERR_BADCHANNELKEY(client.getNick(), channelName));
+        return false;
+    }
+
+    return true;
 }
 
+
 /**
- * If the channel does not exist, it is created and the client is added.
- * If the channel exists, checks are performed:
- *  - If a password is required, it must be correct.
- *  - If the channel has a user limit, it must not be exceeded.
- * If all conditions are met, the client is added to the channel.
+ * This function handles a client joining one or more channels. 
+ * It checks if the channels exist, validates mode restrictions, adds the client to the channel, 
+ * and sends appropriate messages to the client and other members of the channel.
  */
 
-void Server::Join(Client *client, const std::string &channelName, const std::string &password)
+void Server::Join(Client &client, std::string &channels, std::string &password)
 {
-	auto it = _channels.find(channelName);
-	if (it == _channels.end())
+	if (channels.empty())
 	{
-		Channel newChannel(channelName);
-		newChannel.addClient(client);
-		_channels[channelName] = newChannel;
-		client->joinChannel(&newChannel);
-		sendToClient(*client, RPL_JOIN(client->getNick(), channelName));
+		sendToClient(client, "\r\n");
+		return;
 	}
-	else
+
+	std::stringstream ss(channels);
+	std::string channelName;
+
+	while (std::getline(ss, channelName, ','))
 	{
-		Channel &channel = it->second;
-
-		if (!channel.getChannelPassword().empty() && channel.getChannelPassword() != password)
+		bool channelExists = false;
+		for (auto &channelPair : _channels)
 		{
-			sendToClient(*client, ERR_BADCHANNELKEY(client->getNick(), channelName));
-			return;
+			Channel &channel = channelPair.second;
+
+			if (channel.getChannelName() == channelName)
+			{
+				channelExists = true;
+				if (!checkChannelType(client, channel, channelName, password))
+                    return;
+				
+				channel.addClient(client);
+
+				std::string namesList = "";
+				for (Client *clientsIn : channel.getClients())
+					namesList.append(clientsIn->getNick() + " ");
+
+				for (Client *member : channel.getClients())
+				{
+					sendToClient(*member, RPL_JOIN(client.getNick(), client.getUserName(), client.getHostName(), channelName));
+					sendToClient(*member, RPL_NAMREPLY(client.getNick(), channelName));
+					sendToClient(*member, RPL_ENDOFNAMES(client.getNick(), channelName));
+				}
+
+				std::string topic = channel.getTopic();
+				if (!topic.empty())
+					sendToClient(client, RPL_NOTOPIC(channelName));
+				else
+					sendToClient(client, RPL_TOPIC(channelName, topic));
+
+				sendToClient(client, RPL_AVAILABLECMD(client.getNick()));
+
+				return;
+			}
 		}
 
-		if (channel.getUserLimit() > 0 && channel.getUserLimit() >= channel.getUserLimit())
+		if (!channelExists)
 		{
-			sendToClient(*client, ERR_CHANNELISFULL(client->getNick(), channelName));
+			Channel *newChannel = new Channel(channelName);
+			newChannel->setTimestamp();
+			newChannel->setChannelType(PUBLIC);
+
+			if (!password.empty())
+			{
+				newChannel->setChannelPassword(password);
+			}
+
+			newChannel->addClient(client);
+			newChannel->setOperator(&client);
+
+			_channels[channelName] = *newChannel;
+
+			sendToClient(client, RPL_JOIN(client.getNick(), client.getUserName(), client.getHostName(), channelName));
+			sendToClient(client, RPL_NAMREPLY(client.getNick(), channelName));
+			sendToClient(client, RPL_ENDOFNAMES(client.getNick(), channelName));
+
 			return;
 		}
-
-		channel.addClient(client);
-		client->joinChannel(&channel);
 	}
 }
