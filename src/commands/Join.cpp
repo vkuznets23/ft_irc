@@ -13,6 +13,7 @@
 #include "../../inc/Server.hpp"
 #include "../../inc/Client.hpp"
 #include "../../inc/Channel.hpp"
+#include "../../inc/Message.hpp"
 
 void Client::joinChannel(Channel *channel)
 {
@@ -42,7 +43,7 @@ void Server::Join(Client *client, const std::string &channelName, const std::str
 		newChannel.addClient(client);
 		_channels[channelName] = newChannel;
 		client->joinChannel(&newChannel);
-		std::cout << client->getNick() << " created and joined the channel " << channelName << std::endl;
+		sendToClient(*client, RPL_JOIN(client->getNick(), channelName));
 	}
 	else
 	{
@@ -50,18 +51,17 @@ void Server::Join(Client *client, const std::string &channelName, const std::str
 
 		if (!channel.getChannelPassword().empty() && channel.getChannelPassword() != password)
 		{
-			std::cerr << "Incorrect password for joining " << channelName << std::endl;
+			sendToClient(*client, ERR_BADCHANNELKEY(client->getNick(), channelName));
 			return;
 		}
 
 		if (channel.getUserLimit() > 0 && channel.getUserLimit() >= channel.getUserLimit())
 		{
-			std::cerr << "The channel " << channelName << " is full." << std::endl;
+			sendToClient(*client, ERR_CHANNELISFULL(client->getNick(), channelName));
 			return;
 		}
 
 		channel.addClient(client);
 		client->joinChannel(&channel);
-		std::cout << client->getNick() << " joined the channel " << channelName << std::endl;
 	}
 }

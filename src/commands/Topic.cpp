@@ -14,6 +14,7 @@
 #include "../../inc/Server.hpp"
 #include "../../inc/Client.hpp"
 #include "../../inc/Channel.hpp"
+#include "../../inc/Message.hpp"
 
 bool Channel::isOperator(Client *client) const
 {
@@ -21,8 +22,12 @@ bool Channel::isOperator(Client *client) const
 }
 
 /**
- * If the client provides a new topic, it is updated (if they have the necessary permissions).
- * If no topic is provided, the current topic of the channel is sent to the client.
+ * This function allows a client to view or modify the topic of a channel.
+ * - If the channel does not exist, an error is returned.
+ * - If the client is not a member of the channel, they cannot change the topic.
+ * - If the topic is restricted and the client is not an operator, they cannot modify it.
+ * - If no new topic is provided, the current topic is returned.
+ * - If a new topic is provided, it is set and broadcasted to all members of the channel.
  */
 
 void Server::Topic(Client &client, const std::string &channelName, const std::string &newTopic)
@@ -30,7 +35,7 @@ void Server::Topic(Client &client, const std::string &channelName, const std::st
 	auto it = _channels.find(channelName);
 	if (it == _channels.end())
 	{
-		std::cerr << "Channel " << channelName << " does not exist." << std::endl;
+		sendToClient(client, ERR_NOSUCHCHANNEL(client.getNick(), channelName));
 		return;
 	}
 
@@ -38,28 +43,29 @@ void Server::Topic(Client &client, const std::string &channelName, const std::st
 
 	if (newTopic.empty())
 	{
-		std::string topic = channel.getTopic().empty() ? "No topic set" : channel.getTopic();
-		sendToClient(client, "Current topic for " + channelName + ": " + topic);
+		if (channel.getTopic().empty())
+			sendToClient(client, RPL_NOTOPIC(channelName));
+		else
+			sendToClient(client, RPL_TOPIC(channelName, channel.getTopic()));
 		return;
 	}
 
 	if (!channel.isClientInChannel(&client))
 	{
-		std::cerr << "Client " << client.getNick() << " is not in channel " << channelName << std::endl;
+		sendToClient(client, ERR_USERNOTINCHANNEL(client.getNick(), channelName));
 		return;
 	}
 
 	if (channel.isTopicRestricted() && !channel.isOperator(&client))
 	{
-		std::cerr << "Client " << client.getNick() << " does not have permission to change the topic in " << channelName << std::endl;
+		sendToClient(client, ERR_CHANOPRIVSNEEDED(client.getNick(), channelName));
 		return;
 	}
 
 	channel.setTopic(&client, newTopic);
-	std::cout << "Topic for " << channelName << " changed to: " << newTopic << std::endl;
 
 	for (Client *member : channel.getClients())
 	{
-		sendToClient(*member, "Topic for " + channelName + " changed to: " + newTopic);
+		sendToClient(*member, RPL_NEWTOPIC(channelName, channel.getTopic()));
 	}
 }

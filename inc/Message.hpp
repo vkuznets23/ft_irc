@@ -22,41 +22,30 @@
 //authentification
 #define RPL_WELCOME(nickname, username, host)                       ":" + SERVERNAME + " 001 " + nickname + " :Welcome to the Internet Relay Network " + nickname + "!~" + username + "@" + host
 
+//username
+#define ERR_ALREADYREGISTRED()										":" + SERVERNAME + " 462 :Unauthorized command (already registered)"
+
 //nickname
 #define RPL_NICKCHANGE(oldnick, username, host, nickname)			":" + oldnick + "!" + username + "@" + host + " NICK :" + nickname
-#define ERR_NOSUCHNICK(nickname, nicktofind)                        ":" + SERVERNAME + "401 " + nickname + " " + nicktofind + " :No such nick/channel"
-#define ERR_NONICKNAMEGIVEN(nickname)                        		":" + SERVERNAME + "431 " + nickname + " :No nickname given"
-#define ERR_NICKNAMEINUSE(oldnick, nickname)                        ":" + SERVERNAME + "433 " + oldnick + " " + nickname  + " :Nickname is already in use"
+#define ERR_NOSUCHNICK(nickname, nicktofind)                        ":" + SERVERNAME + " 401 " + nickname + " " + nicktofind + " :No such nick/channel"
+#define ERR_NONICKNAMEGIVEN(nickname)                        		":" + SERVERNAME + " 431 " + nickname + " :No nickname given"
+#define ERR_NICKNAMEINUSE(oldnick, nickname)                        ":" + SERVERNAME + " 433 " + oldnick + " " + nickname  + " :Nickname is already in use"
 
-// //channel
-// #define RPL_CREATIONTIME(nickname, channelName, timestamp)          ":" + SERVERNAME + "329 " + nickname + " " + channelName + " " + timestamp
-// #define ERR_NOSUCHCHANNEL(nickname, channelname)                    ":" + SERVERNAME + "403 " + nickname + " " + channelname + " :No such channel"
-// #define ERR_USERNOTINCHANNEL(clientnick, usernickname, channelname) ":" + SERVERNAME + "441 " + nick + " " + usernickname + " " + channelname + " :They aren't on that channel"
-// #define ERR_NOTONCHANNEL(clientnick, channelname)                   ":" + SERVERNAME + "442 " + clientnick + " " + channelname + " :They aren't on that channel"
-// #define ERR_USERONCHANNEL(clientnick, usernick, channelname)        ":" + SERVERNAME + "443 " + clientnick + " " + nick + " " + channelName + " :is already on channel"
-// #define ERR_CHANOPRIVSNEEDED(nickname, channelname)                 ":" + SERVERNAME + "482 " + nickname + " " + channelname + " :You're not channel operator"
-// #define ERR_NONICKNAMEGIVEN()                                       ":" + SERVERNAME + "431 :Nickname not given"
-// #define ERR_PASSWDMISMATCH(source)                                  ":" + SERVERNAME + "464 " + source + " :Password is incorrect"
+//password
+#define RPL_PASSWDOK()                                              "NOTICE * Password is correct!"
+#define ERR_PASSWDMISMATCH(nickname)                                ":" + SERVERNAME + " 464 " + nickname + " :Password is incorrect"
 
-// //modes
-// #define RPL_CHANNELMODEIS(nickname, channelName, channelModes)      ":" + SERVERNAME + "324 " + nickname + " " + channelName + " " + channelModes
-// #define ERR_CHANNELISFULL(nickname, channelName)                    ":" + SERVERNAME + "471 " + nickname + " " + channelName + " :Cannot join channel (+l) - channel is full, try again later"
-// #define ERR_UNKNOWNMODE(nickname, mode)                             ":" + SERVERNAME + "472 " + nickname + " " + mode + " :is an unknown mode char to me"
-// #define ERR_INVITEONLYCHAN(nickname, channelName)                   ":" + SERVERNAME + "473 " + nickname + " " + channelName + " :Cannot join channel (+i) - you must be invited"
-// #define ERR_BADCHANNELKEY(nickname, channelName)                    ":" + SERVERNAME + "475 " + nickname + " " + channelName + " :Cannot join channel (+k) - bad key"
+//topic
+#define RPL_NOTOPIC(channel)										"NOTICE * " + channel + " :No topic is set"
+#define RPL_TOPIC(channel, topic)									"NOTICE * " + channel + " :" + topic 
+#define RPL_NEWTOPIC(channel, topic)								"NOTICE * Topic for " + channel + " changed to :" + topic 
 
-// /* Numeric Responses */
-// #define RPL_PASSWDOK()                                              "NOTICE * Password is correct!"
-// #define RPL_PASSWDREQUEST()                                         "NOTICE * :This server requires a password. Please send: PASS <password>"
-// #define RPL_NICKREQUEST()                                           "NOTICE * :This server requires a user nickname. Please send: NICK <nickname>"
-// #define RPL_USERNAMEREQUEST()                                       "NOTICE * :This server requires a user user name. Please send: User <username username localhost :Name>"
-// #define RPL_NAMREPLY(nickname, channelname, users)                  ":" + SERVERNAME + "353 " + nickname + " @ " + channelname + " :@" + users
-// #define RPL_ENDOFNAMES(source, channelname)                         ":" + SERVERNAME + "366 " + source + " " + channelname + " :End of /NAMES list."
+//channel
+#define ERR_NOSUCHCHANNEL(nickname, channel)                    	":" + SERVERNAME + " 403 " + nickname + " " + channel + " :No such channel"
+#define ERR_USERNOTINCHANNEL(nickname, channel)						":" + SERVERNAME + " 441 " + nickname + " " + channel + " :They aren't on that channel"
+#define ERR_CHANOPRIVSNEEDED(nickname, channel)						":" + SERVERNAME + " 441 " + nickname + " " + channel + " :You're not channel operator"
+#define ERR_CHANNELISFULL(nickname, channel)						":" + SERVERNAME + " 471 " + nickname + " " + channel + " :Cannot join channel (+l)"
+#define ERR_BADCHANNELKEY(nickname, channel)						":" + SERVERNAME + " 475 " + nickname + " " + channel + " :Cannot join channel (+k)"
 
-// /* Command Responses */
-// #define RPL_INVITING(clientnick, nickname, channelname)		        ":" + SERVERNAME + "341 " + clientnick + " " + nickname + " " + channelname
-// #define RPL_NICK(oldnick, username, nick)				            ":" + oldNick + " NICK :" + nick
-// #define RPL_TOPIC(clientnick, channelname, newtopic)	            ":" + clientnick + " TOPIC " + channelName + " " + newtopic
-// #define RPL_JOIN(source, channel)                                   ":" + source + " JOIN :" + channel
-// #define RPL_KICK(source, channel, target, reason)                   ":" + source + " KICK " + channel + " " + target + " :" + reason
-// #define RPL_PRIVMSG(clientnick, nick, message)                      ":" + clientnick + " PRIVMSG " + nick + " :" + message
+//join
+#define RPL_JOIN(nickname, channel)									"NOTICE * " + nickname + " join :" + channel 

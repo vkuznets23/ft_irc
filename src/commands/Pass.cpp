@@ -11,15 +11,16 @@
 /* **************************************************************************************** */
 
 #include "../../inc/Server.hpp"
+#include "../../inc/Message.hpp"
 
 void Server::Pass(Client &client, const std::string &password)
 {
 	if (password != _password)
 	{
-		sendToClient(client, "464 ERR_PASSWDMISMATCH :Password incorrect");
+		sendToClient(client, ERR_PASSWDMISMATCH(client.getNick()));
 		return;
 	}
 
 	client.setPasswdOK(true);
-	sendToClient(client, "NOTICE :Password accepted");
+	sendToClient(client,  RPL_PASSWDOK());
 }

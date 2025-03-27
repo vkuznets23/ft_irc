@@ -100,10 +100,10 @@ void Server::handleClientMessage(Client &client, const std::string &message)
 				std::getline(iss, newTopic);
 				Topic(c, channelName, newTopic);
 			}},
-			{"QUIT", [this, &message](Client &c, std::istringstream &iss)
+			{"QUIT", [this](Client &c, std::istringstream &iss)
 			{
 				(void)iss;
-				Quit(c, message);
+				Quit(c);
 			}}
 		};
 

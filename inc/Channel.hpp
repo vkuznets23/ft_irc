@@ -51,19 +51,19 @@ public:
     std::string getChannelPassword() const;
 
     // client methods
-    void addClient(Client *client);
-    void removeClient(Client *client);
-    bool isClientInChannel(Client *client);
-    void setChannelPassword(const std::string &password);
-    int getUserLimit();
-    void setUserLimit(int limit);
-    void setTopic(Client *client, const std::string &topic);
-    std::string getTopic() const;
-	bool isTopicRestricted() const;
-	std::vector<Client*> getClients() const;
+    void					addClient(Client *client);
+    void					removeClient(Client *client);
+    bool					isClientInChannel(Client *client);
+    void					setChannelPassword(const std::string &password);
+    int						getUserLimit();
+    void					setUserLimit(int limit);
+    void					setTopic(Client *client, const std::string &topic);
+    std::string				getTopic() const;
+	bool					isTopicRestricted() const;
+	std::vector<Client*>	getClients() const;
 
     // chanel modes
-    void setChannelType(ChannelType type);
+    void		setChannelType(ChannelType type);
     ChannelType getChannelType() const;
 
 	bool isOperator(Client *client) const;

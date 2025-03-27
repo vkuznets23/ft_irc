@@ -60,7 +60,7 @@ public:
 	void UserName(Client &client, const std::string &username, const std::string &realname);
 	bool isNickTaken(const std::string &nickname) const;
 	void Nick(Client &client, const std::string &nickname);
-	void Quit(Client &client, std::string message);
+	void Quit(Client &client);
 	void Join(Client *client, const std::string &channelName, const std::string &password);
 	void Topic(Client &client, const std::string &channelName, const std::string &newTopic);
 

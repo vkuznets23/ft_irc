@@ -12,48 +12,34 @@
 
 #include "../../inc/Server.hpp"
 #include "../../inc/Channel.hpp"
+#include "../../inc/Message.hpp"
 
 /**
- * The Quit function handles the QUIT command from a client. 
- * When a client sends a QUIT message, it can include a quit message, 
- * and the client will be removed from the server's client list. 
- * If no message is provided, the default message "Client left" is sent.
- * The client's channels are cleaned up, and the client is disconnected from the server.
+ * This function is called when a client quits the server. It:
+ * 1. Retrieves the list of channels the client has joined.
+ * 2. Notifies other members of these channels that the client has left.
+ * 3. Removes the client from all joined channels.
+ *
+ * The function ensures that the channel's member list is not modified
+ * while iterating over it by making a copy beforehand.
  */
 
-void Server::Quit(Client &client, std::string message)
+void Server::Quit(Client &client)
 {
-	if (client.getState() == DISCONNECTED)
-	{
-		std::cerr << "Client " << client.getNick() << " is already disconnected." << std::endl;
-		return;
-	}
+	std::vector<Channel *> joinedChannels = client.getJoinedChannels();
 
-	if (message.empty())
+	for (Channel *channel : joinedChannels)
 	{
-		message = "Client has disconnected.";
-	}
+		std::vector<Client *> members = channel->getClients();
 
-	for (Channel *channel : client.getJoinedChannels())
-	{
-		for (Client *member : channel->getClients())
+		for (Client *member : members)
 		{
-			if (member != &client)
+			if (member == &client)
 			{
-				sendToClient(*member, client.getNick() + " has left the channel: " + message);
+				channel->removeClient(&client);
 			}
 		}
-		channel->removeClient(&client);
 	}
 
-	close(client.getFd());
-	std::cout << "Client " << client.getNick() << " has disconnected." << std::endl;
-
-	client.setState(DISCONNECTED);
-
-	auto it = std::find(_clients.begin(), _clients.end(), &client);
-	if (it != _clients.end())
-		_clients.erase(it);
-
-	sendToClient(client, "Goodbye " + client.getNick() + "!");
+	std::cout << "Client " << client.getNick() << " removed from all channels." << std::endl;
 }
