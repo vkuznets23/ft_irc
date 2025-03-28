@@ -15,7 +15,7 @@
 #include "../../inc/Channel.hpp"
 #include "../../inc/Message.hpp"
 
-void Server::Part(Client &client, const std::string &channelName)
+void Server::Part(Client &client, const std::string &channelName, std::string message)
 {
 	auto it = _channels.find(channelName);
 	if (it == _channels.end())
@@ -28,16 +28,29 @@ void Server::Part(Client &client, const std::string &channelName)
 
 	if (!channel.isClientInChannel(&client))
 	{
-		sendToClient(client, ERR_USERNOTINCHANNEL(client.getNick(),channelName));
+		sendToClient(client, ERR_USERNOTINCHANNEL(client.getNick(), channelName));
 		return;
 	}
 
-	if (channel.getOperator() == &client)
+	for (Client *member : channel.getClients())
 	{
-		sendToClient(client, RPL_PARTOP(client.getNick()));
-		return; 
+		sendToClient(*member, RPL_PART(client.getNick(), client.getUserName(), client.getHostName(), channelName, message));
 	}
 
 	channel.removeClient(&client);
-	sendToClient(client, RPL_PART(client.getNick(), client.getUserName(), client.getHostName(), channelName));
+
+	if (channel.getOperator() == &client)
+	{
+		std::vector<Client *> clients = channel.getClients();
+		if (!clients.empty())
+		{
+			channel.setOperator(clients.front());
+			sendToClient(*clients.front(), RPL_YOUREOPER(clients.front()->getNick(), channelName));
+		}
+		else
+		{
+			_channels.erase(it);
+			return;
+		}
+	}
 }

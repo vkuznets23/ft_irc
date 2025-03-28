@@ -101,11 +101,11 @@ void Server::handleClientMessage(Client &client, const std::string &message)
 				std::getline(iss, newTopic);
 				Topic(c, channelName, newTopic);
 			}},
-			{"PART", [this](Client &c, std::istringstream &iss)
+			{"PART", [this, &message](Client &c, std::istringstream &iss)
 			{
 				std::string arg1;
 				iss >> arg1;
-				Part(c, arg1);
+				Part(c, arg1, message);
 			}},
 			{"QUIT", [this, &message](Client &c, std::istringstream &iss)
 			{

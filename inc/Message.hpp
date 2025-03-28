@@ -34,16 +34,16 @@ const std::string SERVERNAME = "ircserv";
 #define ERR_NICKNAMEINUSE(oldnick, nickname)						":" + SERVERNAME + " 433 " + oldnick + " " + nickname  + " :Nickname is already in use"
 
 //password
-#define RPL_PASSWDOK()												":" + SERVERNAME + "NOTICE Password is correct!"
+#define RPL_PASSWDOK()												":" + SERVERNAME + " NOTICE Password is correct!"
 #define ERR_PASSWDMISMATCH(nickname)								":" + SERVERNAME + " 464 " + nickname + " :Password is incorrect"
 
 //quit
 #define RPL_QUIT(nickname, username, hostname, message)				":" + nickname + "!~" + username + "@" + hostname + " QUIT :" + message
 
 //topic
-#define RPL_NOTOPIC(channel)										":" + SERVERNAME + "NOTICE " + channel + " :No topic is set"
-#define RPL_TOPIC(channel, topic)									":" + SERVERNAME + "NOTICE " + channel + " :" + topic 
-#define RPL_NEWTOPIC(channel, topic)								":" + SERVERNAME + "NOTICE Topic for " + channel + " changed to :" + topic 
+#define RPL_NOTOPIC(channel)										":" + SERVERNAME + " NOTICE " + channel + " :No topic is set"
+#define RPL_TOPIC(channel, topic)									":" + SERVERNAME + " NOTICE " + channel + " :" + topic 
+#define RPL_NEWTOPIC(channel, topic)								":" + SERVERNAME + " NOTICE Topic for " + channel + " changed to :" + topic 
 
 //channel
 #define ERR_NOSUCHCHANNEL(nickname, channel)						":" + SERVERNAME + " 403 " + nickname + " " + channel + " :No such channel"
@@ -55,14 +55,14 @@ const std::string SERVERNAME = "ircserv";
 #define ERR_BADCHANNELKEY(nickname, channel)						":" + SERVERNAME + " 475 " + nickname + " " + channel + " :Cannot join channel (+k)"
 #define RPL_NAMREPLY(nickname, channel)								":" + SERVERNAME + " 353 " + nickname + " @ " + channel + " :@" + nickname
 #define RPL_ENDOFNAMES(nickname, channel)							":" + SERVERNAME + " 366 " + nickname + " " + channel + " :End of /NAMES list"
+#define RPL_YOUREOPER(nickname, channel)							":" + SERVERNAME + " NOTICE " + channel + ":You are now an IRC operator"
 
 //join
 #define RPL_JOIN(nickname, username, hostname, channel)				":" + nickname + "!~" + username + "@" + hostname + " JOIN " + channel
 #define RPL_JOINWELCOME(nickname, channel)							":" + SERVERNAME + " NOTICE " + nickname + " :Welcome to the channel :" + channel + "!"
 
 //part
-#define RPL_PART(nickname, username, hostname, channel)				":" + nickname + "!~" + username + "@" + hostname + " PART " + channel
-#define RPL_PARTOP(nickname)										":" + SERVERNAME + " "+ nickname + ": Cannot kick an IRC operator"
+#define RPL_PART(nickname, username, hostname, channel, message)	":" + nickname + "!~" + username + "@" + hostname + " PART " + channel + " :" + message
 
 
 #define RPL_AVAILABLECMD(nickname) \

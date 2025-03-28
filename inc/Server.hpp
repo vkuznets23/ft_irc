@@ -63,7 +63,7 @@ public:
 	bool checkChannelType(Client &client, Channel &channel, const std::string &channelName, const std::string &password);
 	void Join(Client &client, std::string &channels, std::string &password);
 	void Topic(Client &client, const std::string &channelName, const std::string &newTopic);
-	void Part(Client &client, const std::string &channelName);
+	void Part(Client &client, const std::string &channelName, std::string message);
 
 	// clean up
 	void cleanupResources(int server_fd);
