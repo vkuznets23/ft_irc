@@ -64,7 +64,7 @@ bool Channel::isClientInChannel(Client *client)
 	return false;
 }
 
-int Channel::getUserLimit() { return (_userLimit); }
+int Channel::getUserLimit() const { return (_userLimit); }
 void Channel::setUserLimit(int limit) { _userLimit = limit; }
 
 std::vector<Client*> Channel::getClients() const { return _userList; }
@@ -104,3 +104,18 @@ void	Channel::setOperator(Client* client) { operatorClient = client; }
 Client*	Channel::getOperator() const { return operatorClient; }
 
 bool Channel::isOperator(Client *client) const { return std::find(_operatorList.begin(), _operatorList.end(), client) != _operatorList.end(); }
+
+/******************************** DISPLAY MESSAGE ********************************/
+
+void Channel::displayChannelMessage(Client &sender, const std::string &message)
+{
+	std::string fullMsg = ":" + sender.getNick() + " PRIVMSG " + _channelName + " :" + message;
+
+	for (Client *client : _userList)
+	{
+		if (client != &sender)
+		{
+			Server::sendToClient(*client, fullMsg);
+		}
+	}
+}

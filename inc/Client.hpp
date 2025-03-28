@@ -50,35 +50,27 @@ class Client
 		Client &operator=(const Client &other);
 		~Client();
 
-		// methods
+		// Getters & Setters
 		void setFd(int value);
 		int getFd() const;
-
 		void setState(clientState state);
 		clientState getState() const;
-
 		void setUserName(std::string userName);
 		std::string getUserName() const;
-
 		void setRealName(std::string realName);
 		std::string getRealName() const;
-
 		void setNick(std::string nick);
 		std::string getNick() const;
-		
+		std::string getHostName() const;
+
+		// Authentication Status
 		void setPasswdOK(bool ok);
 		bool getPasswdOK();
-
 		void setNickOK(bool ok);
 		bool getNickOK();
-
 		void setUserNameOK(bool ok);
 		bool getUserNameOK();
 
-
-		std::string getHostName() const;
-
-		void joinChannel(Channel *channel);
+		// Channel Methods
 		std::vector<Channel *> getJoinedChannels() const;
-
 };

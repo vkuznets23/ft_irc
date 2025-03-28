@@ -76,7 +76,7 @@ void Server::handleClientMessage(Client &client, const std::string &message)
 
 		std::map<std::string, std::function<void(Client&, std::istringstream&) >> registeredCommands =
 		{
-			{"PING", [this](Client &c, std::istringstream &iss)
+			{"PING", [](Client &c, std::istringstream &iss)
 			{
 				std::string arg1;
 				iss >> arg1;
@@ -106,6 +106,13 @@ void Server::handleClientMessage(Client &client, const std::string &message)
 				std::string arg1;
 				iss >> arg1;
 				Part(c, arg1, message);
+			}},
+			{"PRIVMSG", [this](Client &c, std::istringstream &iss)
+			{
+				std::string msgtarget, message;
+				iss >> msgtarget;
+				std::getline(iss, message);
+				Privmsg(c, msgtarget, message);
 			}},
 			{"QUIT", [this, &message](Client &c, std::istringstream &iss)
 			{

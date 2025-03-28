@@ -22,5 +22,4 @@ void Server::Pass(Client &client, const std::string &password)
 	}
 
 	client.setPasswdOK(true);
-	sendToClient(client,  RPL_PASSWDOK());
 }

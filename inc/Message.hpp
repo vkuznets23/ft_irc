@@ -34,7 +34,6 @@ const std::string SERVERNAME = "ircserv";
 #define ERR_NICKNAMEINUSE(oldnick, nickname)						":" + SERVERNAME + " 433 " + oldnick + " " + nickname  + " :Nickname is already in use"
 
 //password
-#define RPL_PASSWDOK()												":" + SERVERNAME + " NOTICE Password is correct!"
 #define ERR_PASSWDMISMATCH(nickname)								":" + SERVERNAME + " 464 " + nickname + " :Password is incorrect"
 
 //quit
@@ -64,6 +63,12 @@ const std::string SERVERNAME = "ircserv";
 //part
 #define RPL_PART(nickname, username, hostname, channel, message)	":" + nickname + "!~" + username + "@" + hostname + " PART " + channel + " :" + message
 
+//privmsg
+#define ERR_NOTEXTTOSEND(nickname)									":" + SERVERNAME + " 412 " + nickname + " :No text to send"
+#define ERR_NORECIPIENT(nickname, command)							":" + SERVERNAME + " 411 " + nickname + " " + command + " :No recipient given"
+#define ERR_TOOMANYTARGETS(nickname, message)						":" + SERVERNAME + " 407 " + nickname + " :" + message
+#define ERR_CANNOTSENDTOCHAN(nickname, channel)						":" + SERVERNAME + " 404 " + nickname + " " + channel + " :Cannot send to channel"
+#define RPL_PRIVMSG(source, target, message)						":" + source + " PRIVMSG " + target + " :" + message
 
 #define RPL_AVAILABLECMD(nickname) \
     ":" + SERVERNAME + " NOTICE " + nickname + " :Available commands:" + "\n" \
