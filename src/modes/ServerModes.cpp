@@ -1,5 +1,5 @@
-#include "../../inc/Server.hpp"
 #include "../../inc/Message.hpp"
+#include "../../inc/Server.hpp"
 #include <unordered_set>
 
 std::string Server::compressModes(const std::string &setModes)
@@ -34,6 +34,7 @@ void Server::executeModes(Client &client, Channel *channel)
     int i = 0;
     std::string setModes;
     std::string setParameters;
+    Client *addOperator;
 
     std::vector<std::string> parameters = channel->getParsedParameters();
 
@@ -50,29 +51,45 @@ void Server::executeModes(Client &client, Channel *channel)
                 case 'i':
                     if (!channel->getInviteOnlyState())
                     {
+                        std::cout << "+i mode" << std::endl;
                         channel->setInviteOnly();
                         setModes += "+i";
                     }
                     break;
-                    // case 'k':
-                    //     channel->setChannelPassword(parameters[i]);
-                    //     setModes += "+k";
-                    //     if (setParameters.empty())
-                    //         setParameters += parameters[i];
-                    //     else
-                    //         setParameters += " " + parameters[i];
-                    //     i++;
-                    //     break;
-                    // case 'l':
-                    //     std::cout << "PARAMETER: " << parameters[i] << std::endl;
-                    //     channel->setUserLimit(std::stoi(parameters[i]));
-                    //     setModes += "+l";
-                    //     if (setParameters.empty())
-                    //         setParameters += parameters[i];
-                    //     else
-                    //         setParameters += " " + parameters[i];
-                    //     i++;
-                    //     break;
+                // case 'k':
+                //     channel->setChannelPassword(parameters[i]);
+                //     setModes += "+k";
+                //     if (setParameters.empty())
+                //         setParameters += parameters[i];
+                //     else
+                //         setParameters += " " + parameters[i];
+                //     i++;
+                //     break;
+                // case 'l':
+                //     std::cout << "PARAMETER: " << parameters[i] << std::endl;
+                //     channel->setUserLimit(std::stoi(parameters[i]));
+                //     setModes += "+l";
+                //     if (setParameters.empty())
+                //         setParameters += parameters[i];
+                //     else
+                //         setParameters += " " + parameters[i];
+                //     i++;
+                //     break;
+                case 'o':
+                    addOperator = getClientByNickname(parameters[i]);
+                    channel->setOperator(addOperator);
+                    std::cout << parameters[i] << " set as operator" << std::endl;
+                    setModes += "+o";
+                    if (setParameters.empty())
+                    {
+                        setParameters += parameters[i];
+                    }
+                    else
+                    {
+                        setParameters += " " + parameters[i];
+                    }
+                    i++;
+                    break;
                 }
             }
             else if (currentSign == '-')

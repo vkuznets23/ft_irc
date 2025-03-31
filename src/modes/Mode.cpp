@@ -1,12 +1,12 @@
-#include "../../inc/Server.hpp"
 #include "../../inc/Message.hpp"
+#include "../../inc/Server.hpp"
 #include <unordered_set>
 
 // add to Client.cpp and Server.cpp
 Client *Server::getClientByNickname(const std::string &nickname)
 {
-    auto it = std::find_if(_clients.begin(), _clients.end(), [&nickname](Client *client)
-                           { return client->getNick() == nickname; });
+    auto it = std::find_if(_clients.begin(), _clients.end(),
+                           [&nickname](Client *client) { return client->getNick() == nickname; });
 
     return (it != _clients.end()) ? *it : nullptr;
 }
@@ -46,6 +46,7 @@ void Server::handleMode(Client &client, const std::string &channelName, const st
         sendToClient(client, ERR_NOSUCHCHANNEL(client.getNick(), channelName));
         return;
     }
+    // we should add logic to JOIN i guess?
     if (!channel->isOperator(&client))
     {
         sendToClient(client, ERR_CHANOPRIVSNEEDED(client.getNick(), channelName));
