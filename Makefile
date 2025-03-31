@@ -19,14 +19,17 @@ CFLAGS = -Wall -Wextra -Werror -std=c++11
 
 SRC_DIR = src
 CMD_DIR = src/commands
+MODES_DIR = src/modes
 INC_DIR = inc
 OBJ_DIR = obj
 CMD_OBJ_DIR = obj/commands
+MODES_OBJ_DIR = obj/modes
 
 SRC = $(SRC_DIR)/main.cpp $(SRC_DIR)/Client.cpp $(SRC_DIR)/runServer.cpp $(SRC_DIR)/Server.cpp\
 		$(SRC_DIR)/handleMessage.cpp $(SRC_DIR)/Channel.cpp\
 		$(CMD_DIR)/Pass.cpp $(CMD_DIR)/Nick.cpp $(CMD_DIR)/UserName.cpp $(CMD_DIR)/Quit.cpp\
-		$(CMD_DIR)/Join.cpp $(CMD_DIR)/Topic.cpp
+		$(CMD_DIR)/Join.cpp $(CMD_DIR)/Topic.cpp \
+		$(MODES_DIR)/Mode.cpp $(MODES_DIR)/ServerModes.cpp $(MODES_DIR)/ServerValidation.cpp
 
 OBJ = $(SRC:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 
@@ -42,7 +45,7 @@ $(NAME): $(OBJ)
 	echo "ircserv compiled"
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(HEADERS)
-	@mkdir -p $(OBJ_DIR) $(CMD_OBJ_DIR)
+	@mkdir -p $(OBJ_DIR) $(CMD_OBJ_DIR) $(MODES_OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:

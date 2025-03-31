@@ -12,11 +12,12 @@
 
 #include "../../inc/Server.hpp"
 #include "../../inc/Channel.hpp"
+#include <unistd.h>
 
 /**
- * The Quit function handles the QUIT command from a client. 
- * When a client sends a QUIT message, it can include a quit message, 
- * and the client will be removed from the server's client list. 
+ * The Quit function handles the QUIT command from a client.
+ * When a client sends a QUIT message, it can include a quit message,
+ * and the client will be removed from the server's client list.
  * If no message is provided, the default message "Client left" is sent.
  * The client's channels are cleaned up, and the client is disconnected from the server.
  */

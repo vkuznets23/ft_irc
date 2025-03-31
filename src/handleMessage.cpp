@@ -73,39 +73,50 @@ void Server::handleClientMessage(Client &client, const std::string &message)
 		std::istringstream iss(message);
 		iss >> arg[0];
 
-		std::map<std::string, std::function<void(Client&, std::istringstream&) >> registeredCommands =
-		{
-			{"PING", [this](Client &c, std::istringstream &iss)
+		std::map<std::string, std::function<void(Client &, std::istringstream &)>> registeredCommands =
 			{
-				std::string arg1;
-				iss >> arg1;
-				sendToClient(c, "PONG " + arg1);
-			}},
-			{"NICK", [this](Client &c, std::istringstream &iss)
-			{
-				std::string arg1;
-				iss >> arg1;
-				Nick(c, arg1);
-			}},
-			{"JOIN", [this](Client &c, std::istringstream &iss)
-			{
-				std::string channelName, password;
-				iss >> channelName >> password;
-				Join(&c, channelName, password);
-			}},
-			{"TOPIC", [this](Client &c, std::istringstream &iss)
-			{
-				std::string channelName, newTopic;
-				iss >> channelName;
-				std::getline(iss, newTopic);
-				Topic(c, channelName, newTopic);
-			}},
-			{"QUIT", [this, &message](Client &c, std::istringstream &iss)
-			{
-				(void)iss;
-				Quit(c, message);
-			}}
-		};
+				{"PING", [this](Client &c, std::istringstream &iss)
+				 {
+					 std::string arg1;
+					 iss >> arg1;
+					 sendToClient(c, "PONG " + arg1);
+				 }},
+				{"NICK", [this](Client &c, std::istringstream &iss)
+				 {
+					 std::string arg1;
+					 iss >> arg1;
+					 Nick(c, arg1);
+				 }},
+				{"JOIN", [this](Client &c, std::istringstream &iss)
+				 {
+					 std::string channelName, password;
+					 iss >> channelName >> password;
+					 Join(&c, channelName, password);
+				 }},
+				{"TOPIC", [this](Client &c, std::istringstream &iss)
+				 {
+					 std::string channelName, newTopic;
+					 iss >> channelName;
+					 std::getline(iss, newTopic);
+					 Topic(c, channelName, newTopic);
+				 }},
+				{"QUIT", [this, &message](Client &c, std::istringstream &iss)
+				 {
+					 (void)iss;
+					 Quit(c, message);
+				 }},
+				{"MODE", [this](Client &c, std::istringstream &iss)
+				 {
+					 std::string channelName;
+					 std::string modeMessage;
+
+					 // First, get the channel name
+					 iss >> channelName;
+
+					 // The rest of the string is the mode message
+					 std::getline(iss, modeMessage);
+					 handleMode(c, channelName, modeMessage);
+				 }}};
 
 		auto it = registeredCommands.find(arg[0]);
 		if (it != registeredCommands.end())

@@ -91,32 +91,181 @@ void testClientMethods()
     std::cout << "testClientMethods passed!" << std::endl;
 }
 
-void testChannelType()
+void testInviteOnlyMode()
 {
-    Channel channel("test_channel");
-    // assert(channel.getChannelType() == PUBLIC);
+    Channel channel("invite_only_channel");
 
-    channel.setChannelType(PRIVATE);
-    assert(channel.getChannelType() == PRIVATE);
+    assert(channel.getInviteOnlyState() == false);
 
-    channel.setChannelType(MODERATED);
-    assert(channel.getChannelType() == MODERATED);
+    channel.setInviteOnly();
+    assert(channel.getInviteOnlyState() == true);
 
-    channel.setChannelType(INVITE_ONLY);
-    assert(channel.getChannelType() == INVITE_ONLY);
+    channel.unsetInviteOnly();
+    assert(channel.getInviteOnlyState() == false);
 
-    std::cout << "testChannelType passed!" << std::endl;
+    std::cout << "testInviteOnlyMode passed!" << std::endl;
+}
+
+void testPasswordMode()
+{
+    Channel channel("password_protected_channel");
+
+    assert(channel.getChannelPassword() == "No password set");
+
+    channel.setChannelPassword("securepass");
+    assert(channel.getChannelPassword() == "securepass");
+
+    channel.unsetChannelPassword();
+    assert(channel.getChannelPassword() == "No password set");
+
+    std::cout << "testPasswordMode passed!" << std::endl;
+}
+
+void testUserLimitMode()
+{
+    Channel channel("user_limit_channel");
+
+    channel.setUserLimit(5);
+    assert(channel.getUserLimit() == 5);
+
+    channel.unsetUserLimit();
+    assert(channel.getUserLimit() == -1);
+
+    std::cout << "testUserLimitMode passed!" << std::endl;
+}
+
+void testTopicMode()
+{
+    Channel channel("topic_channel");
+
+    Client client;
+    client.setNick("user1");
+    channel.addClient(&client);
+
+    try
+    {
+        channel.setTopic(&client, "New Topic");
+    }
+    catch (const std::runtime_error &e)
+    {
+        assert(std::string(e.what()) == "Client is not operator!");
+    }
+
+    std::cout << "testTopicMode passed!" << std::endl;
+}
+
+void testMultipleModes()
+{
+    Channel channel("multi_mode_channel");
+    Client client1;
+    client1.setNick("user1");
+    channel.addClient(&client1);
+
+    channel.setInviteOnly();
+    channel.setChannelPassword("mypassword");
+    channel.setUserLimit(10);
+
+    // topic should be possible to set ONLY BY OPERATOR or if _isInviteOnly(false)
+    try
+    {
+        channel.setTopic(&client1, "Topic for operators only");
+    }
+    catch (const std::runtime_error &e)
+    {
+        std::cout << "Error while setting topic: " << e.what() << std::endl;
+    }
+    std::string mode = channel.getMode();
+
+    assert(mode == "+i +k mypassword +l 10");
+
+    channel.unsetInviteOnly();
+    mode = channel.getMode();
+    assert(mode == "+k mypassword +l 10");
+
+    channel.unsetUserLimit();
+    mode = channel.getMode();
+    assert(mode == "+k mypassword");
+
+    channel.unsetChannelPassword();
+    mode = channel.getMode();
+    assert(mode == "");
+
+    std::cout << "testMultipleModes passed!" << std::endl;
+}
+
+void testChangeNick()
+{
+    Client client;
+    client.setNick("user1");
+
+    assert(client.getNick() == "user1");
+
+    client.setNick("new_nick");
+    assert(client.getNick() == "new_nick");
+
+    std::cout << "testChangeNick passed!" << std::endl;
+}
+
+void testChannelUserLimit()
+{
+    Channel channel("full_channel");
+    channel.setUserLimit(2);
+
+    Client client1;
+    client1.setNick("user1");
+    channel.addClient(&client1);
+
+    Client client2;
+    client2.setNick("user2");
+    channel.addClient(&client2);
+
+    Client client3;
+    client3.setNick("user3");
+
+    try
+    {
+        channel.addClient(&client3);
+        std::cerr << "Test failed, client3 should not be added!" << std::endl;
+    }
+    catch (const std::runtime_error &e)
+    {
+        assert(std::string(e.what()) == "Channel is full!");
+    }
+
+    std::cout << "testChannelUserLimit passed!" << std::endl;
+}
+
+void testUnsetPassword()
+{
+    Channel channel("protected_channel");
+
+    channel.setChannelPassword("password123");
+    assert(channel.getChannelPassword() == "password123");
+
+    channel.unsetChannelPassword();
+    assert(channel.getChannelPassword() == "No password set");
+
+    std::cout << "testUnsetPassword passed!" << std::endl;
 }
 
 int main()
 {
     testAddAndRemoveClient();
     testChannelPassword();
+    testUnsetPassword();
     testUserLimit();
     testSetTopic();
     testClientMethods();
-    testChannelType();
+    testInviteOnlyMode();
+    testPasswordMode();
+    testUserLimitMode();
+    testTopicMode();
+    testMultipleModes();
+    testChangeNick();
+    testChannelUserLimit();
+    testUnsetPassword();
 
-    std::cout << "All tests passed!" << std::endl;
+    std::cout
+        << "All tests passed!" << std::endl;
     return 0;
 }

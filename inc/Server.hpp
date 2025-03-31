@@ -66,5 +66,13 @@ public:
 
 	// clean up
 	void cleanupResources(int server_fd);
-	
+
+	Channel *getChannelByChannelName(const std::string &channelName);
+	void handleMode(Client &client, const std::string &channelName, const std::string &message);
+	bool checkForValidModes(const std::string &message, Client &client, Channel *channel);
+	bool checkValidParameter(int index, std::vector<std::string> parameter, char mode, Channel *channel, Client &client);
+	Client *getClientByNickname(const std::string &nickname);
+	bool userIsMemberOfChannel(Client &client, const std::string &channelName);
+	void executeModes(Client &client, Channel *channel);
+	std::string compressModes(const std::string &setModes);
 };
