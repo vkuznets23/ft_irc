@@ -53,5 +53,5 @@ void Server::invite(Client &inviter, const std::string &nickname, const std::str
 
     channel.addInvite(nickname);
     sendToClient(inviter, RPL_INVITING(inviter.getNick(), nickname, channelName));
-    sendToClient(*invitee, ":" + inviter.getNick() + " INVITE " + nickname + " " + channelName + "\r\n");
+    sendToClient(*invite, ":" + inviter.getNick() + " INVITE " + nickname + " " + channelName + "\r\n");
 }

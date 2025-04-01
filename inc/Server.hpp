@@ -14,14 +14,14 @@
 
 #include "Client.hpp"
 
-#include <iostream>
-#include <vector>
-#include <string>
-#include <sstream>
-#include <cstring>
-#include <csignal>
-#include <map>
 #include <algorithm>
+#include <csignal>
+#include <cstring>
+#include <iostream>
+#include <map>
+#include <sstream>
+#include <string>
+#include <vector>
 
 const int BUFFER_SIZE = 1024;
 const int MAX_CLIENTS = 999;
@@ -31,21 +31,21 @@ class Channel;
 
 class Server
 {
-private:
-	int _port;
-	std::string _password;
-	std::vector<Client *> _clients;
-	std::map<std::string, Channel> _channels;
+  private:
+    int _port;
+    std::string _password;
+    std::vector<Client *> _clients;
+    std::map<std::string, Channel> _channels;
 
-public:
-	// constructors
-	Server();
-	Server(int port, std::string password);
-	Server(const Server &o);
-	Server &operator=(const Server &o);
-	~Server();
+  public:
+    // constructors
+    Server();
+    Server(int port, std::string password);
+    Server(const Server &o);
+    Server &operator=(const Server &o);
+    ~Server();
 
-	void runServer();
+    void runServer();
 
 	// run server
 	int		createServerSocket();
@@ -74,7 +74,17 @@ public:
 	void 						invite(Client &inviter, const std::string &nickname, const std::string &channelName);
 
 
-	// clean up
-	void cleanupResources(int server_fd);
-	
+    // clean up
+    void cleanupResources(int server_fd);
+
+    Channel *getChannelByChannelName(const std::string &channelName);
+    void handleMode(Client &client, const std::string &channelName, const std::string &message);
+    bool checkForValidModes(const std::string &message, Client &client, Channel *channel);
+    bool checkValidParameter(int index, std::vector<std::string> parameter, char mode, Channel *channel,
+                             Client &client);
+    Client *getClientByNickname(const std::string &nickname);
+    bool userIsMemberOfChannel(Client &client, const std::string &channelName);
+    void executeModes(Client &client, Channel *channel);
+    std::string compressModes(const std::string &setModes);
+    void handleNamesCommand(Client &client, const std::string &channelName);
 };
