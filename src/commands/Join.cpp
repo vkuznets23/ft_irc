@@ -17,19 +17,19 @@
 
 bool Server::checkChannelType(Client &client, Channel &channel, const std::string &channelName, const std::string &password)
 {
-	if (channel.getChannelType() == INVITE_ONLY && !channel.isOperator(&client))
+	if (channel.getInviteOnlyState() && !channel.isOperator(&client))
 	{
 		sendToClient(client, ERR_INVITEONLYCHAN(client.getNick(), channelName));
 		return (false);
 	}
 
-	if (channel.getChannelType() == PRIVATE && !channel.isClientInChannel(&client))
-	{
-		sendToClient(client, ERR_BANNEDFROMCHAN(client.getNick(), channelName));
-		return (false);
-	}
+	// if (channel.getChannelType() == PRIVATE && !channel.isClientInChannel(&client))
+	// {
+	// 	sendToClient(client, ERR_BANNEDFROMCHAN(client.getNick(), channelName));
+	// 	return (false);
+	// }
 
-	if (channel.getChannelType() == MODERATED && !channel.isOperator(&client))
+	if (channel.getUserCount() >= channel.getUserLimit() && !channel.isOperator(&client))
 	{
 		sendToClient(client, ERR_INVITEONLYCHAN(client.getNick(), channelName));
 		return (false);
@@ -97,7 +97,6 @@ void Server::Join(Client &client, std::string &channels, std::string &password)
 		// Create a new channel if it does not exist
 		Channel newChannel(channelName);
 		newChannel.setTimestamp();
-		newChannel.setChannelType(PUBLIC);
 
 		_channels[channelName] = newChannel;
 		Channel &createdChannel = _channels[channelName];

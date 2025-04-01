@@ -61,7 +61,7 @@ void testSetTopic()
     // Setting the topic should throw an exception if client is not operator
     try
     {
-        channel.setTopic(&client1, "New Topic");
+        channel.setTopic("New Topic");
     }
     catch (const std::runtime_error &e)
     {
@@ -144,7 +144,7 @@ void testTopicMode()
 
     try
     {
-        channel.setTopic(&client, "New Topic");
+        channel.setTopic("New Topic");
     }
     catch (const std::runtime_error &e)
     {
@@ -168,7 +168,7 @@ void testMultipleModes()
     // topic should be possible to set ONLY BY OPERATOR or if _isInviteOnly(false)
     try
     {
-        channel.setTopic(&client1, "Topic for operators only");
+        channel.setTopic("Topic for operators only");
     }
     catch (const std::runtime_error &e)
     {

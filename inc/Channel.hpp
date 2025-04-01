@@ -21,14 +21,6 @@
 
 class Client;
 
-enum ChannelType
-{
-	PUBLIC,
-	INVITE_ONLY,
-	PRIVATE,
-	MODERATED
-};
-
 class Channel
 {
 	private:
@@ -39,7 +31,6 @@ class Channel
 		bool						_topicOperatorsOnly;
 		std::vector<Client *>		_userList;
 		std::vector<Client *>		_operatorList;
-		ChannelType					_type;
 		std::string					_timestamp;
 		Client*						operatorClient = nullptr;
 		std::set<std::string>		_invitedUsers;
@@ -59,8 +50,6 @@ class Channel
 		std::string	getChannelName() const;
 		void		setTimestamp();
 		std::string	getTimestamp() const;
-		void		setChannelType(ChannelType type);
-		ChannelType	getChannelType() const;
 
 		// Client Methods
 		void					addClient(Client &client);
@@ -90,9 +79,10 @@ class Channel
 		int		getUserLimit() const;
 		void	setUserLimit(int limit);
 		void	unsetUserLimit();
+		int		getUserCount() const;
 
 		// topic
-		void		setTopic(Client *client, const std::string &topic);
+		void		setTopic(const std::string &topic);
 		std::string	getTopic() const;
 		bool		isTopicRestricted() const;
 
@@ -103,11 +93,6 @@ class Channel
 		bool getInviteOnlyState();
 		void setInviteOnly();
 		void unsetInviteOnly();
-
-		// operator
-		bool isOperator(Client *client) const;
-		void setOperator(Client *client);
-
 
 		void clearParsedParameters() { _parsedParameters.clear(); }
 		std::vector<std::string> getParsedParameters() { return (_parsedParameters); }

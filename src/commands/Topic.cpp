@@ -57,7 +57,7 @@ void Server::Topic(Client &client, const std::string &channelName, const std::st
 		return;
 	}
 
-	channel.setTopic(&client, newTopic);
+	channel.setTopic(newTopic);
 
 	for (Client *member : channel.getClients())
 	{

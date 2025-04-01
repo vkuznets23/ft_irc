@@ -69,22 +69,17 @@ int Channel::getUserLimit() const { return (_userLimit); }
 void Channel::setUserLimit(int limit) { _userLimit = limit; }
 void Channel::unsetUserLimit() { _userLimit = -1; }
 
+int Channel::getUserCount() const
+{
+    return _userList.size();
+}
+
 std::vector<Client *> Channel::getClients() const { return _userList; }
-bool Channel::isTopicRestricted() const { return _topicOperatorsOnly; }
 
 /******************************** TOPIC METHODS (OPERATOR) ********************************/
 std::string Channel::getTopic() const { return _topic; }
-
-/*user with operator rights only*/
-void Channel::setTopic(Client *client, const std::string &topic)
-{
-	if (!isClientInChannel(client))
-		throw std::runtime_error("Client is not in the channel!");
-	if (_topicOperatorsOnly)
-		throw std::runtime_error("Client is not operator!");
-	else
-		_topic = topic;
-}
+void Channel::setTopic(const std::string &topic) { _topic = topic; }
+bool Channel::isTopicRestricted() const { return _topicOperatorsOnly; }
 
 /******************************** OPERATORS ********************************/
 void Channel::setOperator(Client *client)
@@ -93,9 +88,9 @@ void Channel::setOperator(Client *client)
 	if (it == _operatorList.end())
 		_operatorList.push_back(client);
 }
-/******************************** CHANNEL TYPES ********************************/
-void Channel::setChannelType(ChannelType type) { _type = type; }
-ChannelType Channel::getChannelType() const { return _type; }
+
+Client*	Channel::getOperator() const { return operatorClient; }
+bool Channel::isOperator(Client *client) const { return std::find(_operatorList.begin(), _operatorList.end(), client) != _operatorList.end(); }
 
 /******************************** TIMESTAMP ********************************/
 void Channel::setTimestamp()
@@ -105,12 +100,6 @@ void Channel::setTimestamp()
 }
 
 std::string Channel::getTimestamp() const { return _timestamp; }
-
-/******************************** OPERATOR ********************************/
-void	Channel::setOperator(Client* client) { operatorClient = client; }
-Client*	Channel::getOperator() const { return operatorClient; }
-
-bool Channel::isOperator(Client *client) const { return std::find(_operatorList.begin(), _operatorList.end(), client) != _operatorList.end(); }
 
 /******************************** DISPLAY MESSAGE ********************************/
 void Channel::displayChannelMessage(Client &sender, const std::string &message)
