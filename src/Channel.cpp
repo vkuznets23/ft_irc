@@ -119,3 +119,20 @@ void Channel::displayChannelMessage(Client &sender, const std::string &message)
 		}
 	}
 }
+
+/******************************** INVITE ********************************/
+
+void Channel::addInvite(const std::string &nickname)
+{
+    _invitedUsers.insert(nickname);
+}
+
+bool Channel::isInvited(const std::string &nickname) const
+{
+    return _invitedUsers.find(nickname) != _invitedUsers.end();
+}
+
+void Channel::removeInvite(const std::string &nickname)
+{
+    _invitedUsers.erase(nickname);
+}

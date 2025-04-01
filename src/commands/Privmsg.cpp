@@ -14,7 +14,6 @@
 #include "../../inc/Client.hpp"
 #include "../../inc/Channel.hpp"
 #include "../../inc/Message.hpp"
-#include <set>
 
 Client* Server::findClient(const std::string &nick)
 {

@@ -47,7 +47,7 @@ const std::string SERVERNAME = "ircserv";
 //channel
 #define ERR_NOSUCHCHANNEL(nickname, channel)						":" + SERVERNAME + " 403 " + nickname + " " + channel + " :No such channel"
 #define ERR_USERNOTINCHANNEL(nickname, channel)						":" + SERVERNAME + " 441 " + nickname + " " + channel + " :They aren't on that channel"
-#define ERR_CHANOPRIVSNEEDED(nickname, channel)						":" + SERVERNAME + " 441 " + nickname + " " + channel + " :You're not channel operator"
+#define ERR_CHANOPRIVSNEEDED(nickname, channel)						":" + SERVERNAME + " 482 " + nickname + " " + channel + " :You're not channel operator"
 #define ERR_CHANNELISFULL(nickname, channel)						":" + SERVERNAME + " 471 " + nickname + " " + channel + " :Cannot join channel (+l)"
 #define ERR_INVITEONLYCHAN(nickname, channel)						":" + SERVERNAME + " 473 " + nickname + " " + channel + " :Cannot join channel (+i)"
 #define ERR_BANNEDFROMCHAN(nickname, channel)						":" + SERVERNAME + " 474 " + nickname + " " + channel + " :Cannot join channel (+b)"
@@ -69,6 +69,12 @@ const std::string SERVERNAME = "ircserv";
 #define ERR_TOOMANYTARGETS(nickname, message)						":" + SERVERNAME + " 407 " + nickname + " :" + message
 #define ERR_CANNOTSENDTOCHAN(nickname, channel)						":" + SERVERNAME + " 404 " + nickname + " " + channel + " :Cannot send to channel"
 #define RPL_PRIVMSG(source, target, message)						":" + source + " PRIVMSG " + target + " :" + message
+
+//invite
+#define ERR_USERONCHANNEL(nick, target, channel)					":" + SERVERNAME + " 443 " + nick + " " + target + " " + channel + " :is already on channel"
+#define ERR_NOTONCHANNEL(nick, channel)								":" + SERVERNAME + " 442 " + nick + " " + channel + " :You're not on that channel"
+#define RPL_INVITING(nick, target, channel)							":" + SERVERNAME + " 341 " + nick + " " + target + " " + channel
+
 
 #define RPL_AVAILABLECMD(nickname) \
     ":" + SERVERNAME + " NOTICE " + nickname + " :Available commands:" + "\n" \

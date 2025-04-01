@@ -68,10 +68,18 @@ void Server::Join(Client &client, std::string &channels, std::string &password)
 		if (it != _channels.end())
 		{
 			Channel &channel = it->second;
+
+			if (channel.getInviteOnlyState() && !channel.isInvited(client.getNick()))
+			{
+				sendToClient(client, ERR_INVITEONLYCHAN(client.getNick(), channelName));
+				continue;
+			}
+
 			if (!checkChannelType(client, channel, channelName, password))
 				return;
 
 			channel.addClient(client);
+			channel.removeInvite(client.getNick());
 
 			for (Client *member : channel.getClients())
 			{

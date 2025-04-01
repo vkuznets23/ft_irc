@@ -17,6 +17,7 @@
 #include <vector>
 #include <iostream>
 #include <ctime>
+#include <set>
 
 class Client;
 
@@ -41,6 +42,7 @@ class Channel
 		ChannelType				_type;
 		std::string				_timestamp;
 		Client*					operatorClient = nullptr;
+		std::set<std::string>	_invitedUsers;
 
 	public:
 		// Constructors
@@ -77,4 +79,9 @@ class Channel
 
 		// Display message to all clients in the channel
 		void displayChannelMessage(Client &sender, const std::string &message);
+
+		//Invite
+		void	addInvite(const std::string &nickname);
+		bool	isInvited(const std::string &nickname) const;
+		void	removeInvite(const std::string &nickname);
 };

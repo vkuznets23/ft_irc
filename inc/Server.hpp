@@ -71,6 +71,8 @@ public:
 	std::vector<std::string>	parseTargets(const std::string &msgtarget, Client &client);
 	Client*						findClient(const std::string &nick);
 	void						Privmsg(Client &client, const std::string &msgtarget, const std::string &message);
+	void 						invite(Client &inviter, const std::string &nickname, const std::string &channelName);
+
 
 	// clean up
 	void cleanupResources(int server_fd);
