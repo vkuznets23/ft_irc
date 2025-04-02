@@ -16,6 +16,16 @@
 #include <map>
 #include <sstream>
 
+// UTILITY
+std::string trim(const std::string &str)
+{
+    size_t first = str.find_first_not_of(" \t\n\r\f\v");
+    if (first == std::string::npos)
+        return ""; // No non-whitespace character found
+    size_t last = str.find_last_not_of(" \t\n\r\f\v");
+    return str.substr(first, (last - first + 1));
+}
+
 void Server::sendToClient(Client client, const std::string &message)
 {
 	std::string response = message + "\r\n";
@@ -45,30 +55,30 @@ void Server::handleClientMessage(Client &client, const std::string &message)
     {
         std::cout << "Client is registering..." << std::endl;
 
-		std::vector<std::string> tokens = split(message);
-		if (tokens.size() < 2)
-		{
-			sendToClient(client, "Error");
-			return;
-		}
-		for (size_t i = 0; i < tokens.size(); ++i)
-		{
-			if (tokens[i] == "PASS" && i + 1 < tokens.size())
-				Pass(client, tokens[i + 1]);
-			else if (tokens[i] == "USER" && i + 4 < tokens.size())
-				UserName(client, tokens[i + 1], tokens[i + 4]);
-			else if (tokens[i] == "NICK" && i + 1 < tokens.size())
-				Nick(client, tokens[i + 1]);
-		}
-		if (client.getUserNameOK() && client.getNickOK() && client.getPasswdOK())
-		{
-			client.setState(REGISTERED);
-			sendToClient(client, RPL_WELCOME(client.getNick(), client.getUserName(), client.getHostName()));
-			sendToClient(client, RPL_AVAILABLECMD(client.getNick()));
-		}
-	}
-	else
-	{
+        std::vector<std::string> tokens = split(message);
+        if (tokens.size() < 2)
+        {
+            sendToClient(client, "Error");
+            return;
+        }
+        for (size_t i = 0; i < tokens.size(); ++i)
+        {
+            if (tokens[i] == "PASS" && i + 1 < tokens.size())
+                Pass(client, tokens[i + 1]);
+            else if (tokens[i] == "USER" && i + 4 < tokens.size())
+                UserName(client, tokens[i + 1], tokens[i + 4]);
+            else if (tokens[i] == "NICK" && i + 1 < tokens.size())
+                Nick(client, tokens[i + 1]);
+        }
+        if (client.getUserNameOK() && client.getNickOK() && client.getPasswdOK())
+        {
+            client.setState(REGISTERED);
+            sendToClient(client, RPL_WELCOME(client.getNick(), client.getUserName(), client.getHostName()));
+            sendToClient(client, RPL_AVAILABLECMD(client.getNick()));
+        }
+    }
+    else
+    {
 
         std::string arg[3];
         std::istringstream iss(message);
@@ -123,10 +133,14 @@ void Server::handleClientMessage(Client &client, const std::string &message)
 			}},
 			{"MODE", [this](Client &c, std::istringstream &iss)
 			{
-				std::string channelName;
-				std::string modeMessage;
+				std::string channelName, modeMessage;
 				iss >> channelName;
+
 				std::getline(iss, modeMessage);
+				modeMessage = trim(modeMessage);
+				std::cout << "DEBUG: Received MODE command - Channel: " << channelName
+						  << ", Mode Message: " << modeMessage << std::endl;
+
 				handleMode(c, channelName, modeMessage);
 			}},
 			{"NAMES", [this](Client &c, std::istringstream &iss)

@@ -29,16 +29,26 @@ Channel *Server::getChannelByChannelName(const std::string &channelName)
 	return nullptr;
 }
 
+void Server::sendCurrentModes(Client &client, Channel *channel)
+{
+    // Get the active modes for the channel using the getMode() function
+    std::string modes = channel->getMode();
+
+    if (modes.empty())
+        modes = "No modes set";
+
+    std::string response =
+        ":ircserv(current mode) " + client.getNick() + " MODE " + channel->getChannelName() + " " + modes;
+    sendToClient(client, response);
+}
+
 void Server::handleMode(Client &client, const std::string &channelName, const std::string &message)
 {
-
-    // check if operator send command (DONE)
-    // parameters parsing
-    // change channel states
-    // send messages
-
-    if (channelName[0] != '#')
+    if (channelName.empty() || channelName[0] != '#')
+    {
+        std::cout << "ERROR: Invalid channel name" << std::endl;
         return;
+    }
 
     Channel *channel = getChannelByChannelName(channelName);
     if (!channel)
@@ -46,7 +56,18 @@ void Server::handleMode(Client &client, const std::string &channelName, const st
         sendToClient(client, ERR_NOSUCHCHANNEL(client.getNick(), channelName));
         return;
     }
-    // we should add logic to JOIN i guess?
+
+    if (message.empty())
+    {
+        std::string currentModes = channel->getMode();
+        std::cout << "DEBUG: Returning current mode: " << currentModes << std::endl;
+        std::string response =
+            ":ircserv(current mode) " + client.getNick() + " MODE " + channel->getChannelName() + " " + currentModes;
+
+        sendToClient(client, response);
+        return;
+    }
+
     if (!channel->isOperator(&client))
     {
         sendToClient(client, ERR_CHANOPRIVSNEEDED(client.getNick(), channelName));

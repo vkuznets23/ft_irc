@@ -47,10 +47,10 @@ public:
 
 	void runServer();
 
-	// run server
-	int		createServerSocket();
-	void	bindAndListen(int server_fd);
-	void	acceptNewConnection(int server_fd);
+    // run server
+    int createServerSocket();
+    void bindAndListen(int server_fd);
+    void acceptNewConnection(int server_fd);
 
 	// handleMessage for commands like
 	static void					sendToClient(Client client, const std::string &message);
@@ -87,4 +87,9 @@ public:
 	void executeModes(Client &client, Channel *channel);
 	std::string compressModes(const std::string &setModes);
 	void handleNamesCommand(Client &client, const std::string &channelName);
+    void handleMode(char sign, char mode, Channel *channel, const std::vector<std::string> &parameters, int &i,
+		std::string &setModes, std::string &setParameters);
+	void sendCurrentModes(Client &client, Channel *channel);
 };
+	
+std::string trim(const std::string &str);
