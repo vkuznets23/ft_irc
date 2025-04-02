@@ -47,32 +47,32 @@ class Server
 
     void runServer();
 
-	// run server
-	int		createServerSocket();
-	void	bindAndListen(int server_fd);
-	void	acceptNewConnection(int server_fd);
+    // run server
+    int createServerSocket();
+    void bindAndListen(int server_fd);
+    void acceptNewConnection(int server_fd);
 
-	// handleMessage for commands like
-	static void					sendToClient(Client client, const std::string &message);
-	std::vector<std::string>	split(const std::string &str);
-	void						handleClientMessage(Client &client, const std::string &message);
+    // handleMessage for commands like
+    static void sendToClient(Client client, const std::string &message);
+    std::vector<std::string> split(const std::string &str);
+    void handleClientMessage(Client &client, const std::string &message);
 
-	// commands
-	void 						Pass(Client &client, const std::string &password);
-	void 						UserName(Client &client, const std::string &username, const std::string &realname);
-	bool 						isNickTaken(const std::string &nickname) const;
-	void 						Nick(Client &client, const std::string &nickname);
-	void 						Quit(Client &client, std::string message);
-	bool 						checkChannelType(Client &client, Channel &channel, const std::string &channelName, const std::string &password);
-	void 						Join(Client &client, std::string &channels, std::string &password);
-	void 						Topic(Client &client, const std::string &channelName, const std::string &newTopic);
-	void 						Part(Client &client, const std::string &channelName, std::string message);
-	bool 						checkBasicErrors(Client &client, const std::string &msgtarget, const std::string &message);
-	std::vector<std::string>	parseTargets(const std::string &msgtarget, Client &client);
-	Client*						findClient(const std::string &nick);
-	void						Privmsg(Client &client, const std::string &msgtarget, const std::string &message);
-	void 						invite(Client &inviter, const std::string &nickname, const std::string &channelName);
-
+    // commands
+    void Pass(Client &client, const std::string &password);
+    void UserName(Client &client, const std::string &username, const std::string &realname);
+    bool isNickTaken(const std::string &nickname) const;
+    void Nick(Client &client, const std::string &nickname);
+    void Quit(Client &client, std::string message);
+    bool checkChannelType(Client &client, Channel &channel, const std::string &channelName,
+                          const std::string &password);
+    void Join(Client &client, std::string &channels, std::string &password);
+    void Topic(Client &client, const std::string &channelName, const std::string &newTopic);
+    void Part(Client &client, const std::string &channelName, std::string message);
+    bool checkBasicErrors(Client &client, const std::string &msgtarget, const std::string &message);
+    std::vector<std::string> parseTargets(const std::string &msgtarget, Client &client);
+    Client *findClient(const std::string &nick);
+    void Privmsg(Client &client, const std::string &msgtarget, const std::string &message);
+    void invite(Client &inviter, const std::string &nickname, const std::string &channelName);
 
     // clean up
     void cleanupResources(int server_fd);
@@ -87,4 +87,7 @@ class Server
     void executeModes(Client &client, Channel *channel);
     std::string compressModes(const std::string &setModes);
     void handleNamesCommand(Client &client, const std::string &channelName);
+    void handleMode(char sign, char mode, Channel *channel, const std::vector<std::string> &parameters, int &i,
+                    std::string &setModes, std::string &setParameters);
+    void sendCurrentModes(Client &client, Channel *channel);
 };

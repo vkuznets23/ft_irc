@@ -2,6 +2,54 @@
 #include "../../inc/Server.hpp"
 #include <unordered_set>
 
+void Server::handleMode(char sign, char mode, Channel *channel, const std::vector<std::string> &parameters, int &i,
+                        std::string &setModes, std::string &setParameters)
+{
+    if (!channel->getInviteOnlyState())
+        std::cout << "bitch" << std::endl;
+    switch (mode)
+    {
+    // USAGE: /MODE #channel_name +i / -i
+    case 'i':
+        if (sign == '+')
+        {
+            if (!channel->getInviteOnlyState())
+            {
+                std::cout << "+i mode" << std::endl;
+                channel->setInviteOnly();
+                setModes += "+i";
+            }
+        }
+        else if (sign == '-')
+        {
+            if (channel->getInviteOnlyState())
+            {
+                std::cout << "-i mode" << std::endl;
+                channel->unsetInviteOnly();
+                setModes += "-i";
+            }
+        }
+        break;
+
+    case 'o':
+        if (sign == '+')
+        {
+            Client *addOperator = getClientByNickname(parameters[i]);
+            channel->setOperator(addOperator);
+            std::cout << parameters[i] << " set as operator" << std::endl;
+            setModes += "+o";
+            if (setParameters.empty())
+                setParameters += parameters[i];
+            else
+                setParameters += " " + parameters[i];
+            i++;
+        }
+        break;
+
+        // Add other modes (e.g., 'k', 'l') here with similar logic if required
+    }
+}
+
 std::string Server::compressModes(const std::string &setModes)
 {
     std::string result;
@@ -30,101 +78,32 @@ std::string Server::compressModes(const std::string &setModes)
 void Server::executeModes(Client &client, Channel *channel)
 {
     std::string response;
-    char currentSign;
-    int i = 0;
     std::string setModes;
     std::string setParameters;
-    Client *addOperator;
-
+    int i = 0;
     std::vector<std::string> parameters = channel->getParsedParameters();
+    std::string modes = channel->getParsedModes();
 
-    for (char c : channel->getParsedModes())
+    for (size_t j = 0; j < modes.size(); ++j)
     {
-        if (c == '+' || c == '-')
-            currentSign = c;
-        else
+        char sign = modes[j];
+        if (sign == '+' || sign == '-')
         {
-            if (currentSign == '+')
+            // Ensure there's a mode character to process
+            if (j + 1 < modes.size())
             {
-                switch (c)
-                {
-                case 'i':
-                    if (!channel->getInviteOnlyState())
-                    {
-                        std::cout << "+i mode" << std::endl;
-                        channel->setInviteOnly();
-                        setModes += "+i";
-                    }
-                    break;
-                // case 'k':
-                //     channel->setChannelPassword(parameters[i]);
-                //     setModes += "+k";
-                //     if (setParameters.empty())
-                //         setParameters += parameters[i];
-                //     else
-                //         setParameters += " " + parameters[i];
-                //     i++;
-                //     break;
-                // case 'l':
-                //     std::cout << "PARAMETER: " << parameters[i] << std::endl;
-                //     channel->setUserLimit(std::stoi(parameters[i]));
-                //     setModes += "+l";
-                //     if (setParameters.empty())
-                //         setParameters += parameters[i];
-                //     else
-                //         setParameters += " " + parameters[i];
-                //     i++;
-                //     break;
-                case 'o':
-                    addOperator = getClientByNickname(parameters[i]);
-                    channel->setOperator(addOperator);
-                    std::cout << parameters[i] << " set as operator" << std::endl;
-                    setModes += "+o";
-                    if (setParameters.empty())
-                    {
-                        setParameters += parameters[i];
-                    }
-                    else
-                    {
-                        setParameters += " " + parameters[i];
-                    }
-                    i++;
-                    break;
-                }
-            }
-            else if (currentSign == '-')
-            {
-                switch (c)
-                {
-                case 'i':
-                    if (channel->getInviteOnlyState())
-                    {
-                        channel->unsetInviteOnly();
-                        setModes += "-i";
-                    }
-                    break;
-                    // case 'k':
-                    //     if (!channel->getChannelPassword().empty())
-                    //     {
-                    //         channel->setChannelPassword("");
-                    //         setModes += "-k";
-                    //     }
-                    //     break;
-                    // case 'l':
-                    //     if (channel->getUserLimit() != -1)
-                    //     {
-                    //         channel->setUserLimit(-1);
-                    //         setModes += "-l";
-                    //     }
-                    //     break;
-                }
+                handleMode(sign, modes[j + 1], channel, parameters, i, setModes, setParameters);
+                j++; // Skip next character as it's the mode character (e.g., 'o', 'i', etc.)
             }
         }
     }
+
     setModes = compressModes(setModes);
-    response = ":" + client.getNick() + " " + "Mode" + " " + channel->getChannelName() + " " + setModes;
+    response = ":ircserv(execut) " + client.getNick() + " " + "MODE" + " " + channel->getChannelName() + " " + setModes;
+
     if (!setParameters.empty())
         response += " " + setParameters;
+
     for (Client *member : channel->getUsers())
         sendToClient(*member, response);
 }
