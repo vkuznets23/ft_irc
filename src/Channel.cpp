@@ -102,13 +102,30 @@ void Channel::setTimestamp()
 std::string Channel::getTimestamp() const { return _timestamp; }
 
 /******************************** DISPLAY MESSAGE ********************************/
-void Channel::displayChannelMessage(Client &sender, const std::string &message)
+void Channel::displayChannelMessagePrivMsg(Client &sender, const std::string &message)
 {
 	std::string cleanedMessage = message;
 	cleanedMessage.erase(std::find_if(cleanedMessage.rbegin(), cleanedMessage.rend(), 
 					[](unsigned char ch) { return !std::isspace(ch); }).base(), cleanedMessage.end());
 
 	std::string fullMsg = ":" + sender.getNick() + " PRIVMSG " + _channelName + " :" + cleanedMessage;
+
+	for (Client *client : _userList)
+	{
+		if (client != &sender)
+		{
+			Server::sendToClient(*client, fullMsg);
+		}
+	}
+}
+
+void Channel::displayChannelMessageKick(Client &sender, const std::string &message, const std::string &target)
+{
+	std::string cleanedMessage = message;
+	cleanedMessage.erase(std::find_if(cleanedMessage.rbegin(), cleanedMessage.rend(), 
+					[](unsigned char ch) { return !std::isspace(ch); }).base(), cleanedMessage.end());
+
+	std::string fullMsg = ":" + sender.getNick() + " KICK " + _channelName + " " + target + " " + cleanedMessage;
 
 	for (Client *client : _userList)
 	{

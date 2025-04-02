@@ -63,7 +63,8 @@ class Channel
 		bool	isOperator(Client *client) const;
 
 		// Display message to all clients in the channel
-		void displayChannelMessage(Client &sender, const std::string &message);
+		void displayChannelMessagePrivMsg(Client &sender, const std::string &message);
+		void displayChannelMessageKick(Client &sender, const std::string &message, const std::string &target);
 
 		//Invite
 		void	addInvite(const std::string &nickname);

@@ -12,11 +12,11 @@
 
 #pragma once
 
+#include "Channel.hpp"
 #include <string>
 #include <netinet/in.h>
 #include <algorithm>
 #include <vector>
-#include "Channel.hpp"
 
 class Channel;
 

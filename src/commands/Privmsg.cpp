@@ -99,7 +99,7 @@ void Server::Privmsg(Client &client, const std::string &msgtarget, const std::st
 				if (!channel.isClientInChannel(&client))
 					sendToClient(client, ERR_CANNOTSENDTOCHAN(client.getNick(), target));
 				else
-					channel.displayChannelMessage(client, message);
+					channel.displayChannelMessagePrivMsg(client, message);
 			}
 		}
 		else

@@ -13,7 +13,6 @@
 #pragma once
 
 #include "Client.hpp"
-
 #include <algorithm>
 #include <csignal>
 #include <cstring>
@@ -55,12 +54,15 @@ public:
 	// handleMessage for commands like
 	static void					sendToClient(Client client, const std::string &message);
 	std::vector<std::string>	split(const std::string &str);
+	void						handleRegistration(Client &client, const std::string &message);
+	void						handleCommands(Client &client, const std::string &message);
 	void						handleClientMessage(Client &client, const std::string &message);
 
 	// commands
 	void 						Pass(Client &client, const std::string &password);
 	void 						UserName(Client &client, const std::string &username, const std::string &realname);
 	bool 						isNickTaken(const std::string &nickname) const;
+	bool						isValidNick(const std::string &nickname) const;
 	void 						Nick(Client &client, const std::string &nickname);
 	void 						Quit(Client &client, std::string message);
 	bool						isChannelValid(Client &client, const std::string& channel);

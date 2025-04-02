@@ -31,6 +31,7 @@ const std::string SERVERNAME = "ircserv";
 #define RPL_NICKCHANGE(oldnick, username, host, nickname)			":" + oldnick + "!" + username + "@" + host + " NICK :" + nickname
 #define ERR_NOSUCHNICK(nickname, nicktofind)						":" + SERVERNAME + " 401 " + nickname + " " + nicktofind + " :No such nick/channel"
 #define ERR_NONICKNAMEGIVEN(nickname)								":" + SERVERNAME + " 431 " + nickname + " :No nickname given"
+#define ERR_ERRONEUSNICKNAME(nickname)								":" + SERVERNAME + " 432 " + " " + nickname  + " :Erroneous nickname"
 #define ERR_NICKNAMEINUSE(oldnick, nickname)						":" + SERVERNAME + " 433 " + oldnick + " " + nickname  + " :Nickname is already in use"
 
 //password

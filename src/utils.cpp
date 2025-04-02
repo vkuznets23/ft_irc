@@ -10,40 +10,35 @@
 /*                                                                                          */
 /* **************************************************************************************** */
 
-#include "../../inc/Server.hpp"
-#include "../../inc/Client.hpp"
-#include "../../inc/Channel.hpp"
-#include "../../inc/Message.hpp"
+#include "../inc/Server.hpp"
 
-void Server::Kick(Client &client, const std::string &channelName, const std::string &target, const std::string &reason)
+std::string trim(const std::string &str)
 {
-	Channel *channel = getChannelByChannelName(channelName);
-	if (!channel)
-	{
-		sendToClient(client, ERR_NOSUCHCHANNEL(client.getNick(), channelName));
-		return;
-	}
+	size_t first = str.find_first_not_of(" \t\n\r\f\v");
+	if (first == std::string::npos)
+		return ("");
 
-	if (!channel->isClientInChannel(&client))
-	{
-		sendToClient(client, ERR_NOTONCHANNEL(client.getNick(), channelName));
-		return;
-	}
+	size_t last = str.find_last_not_of(" \t\n\r\f\v");
+	return (str.substr(first, (last - first + 1)));
+}
 
-	if (!channel->isOperator(&client))
-	{
-		sendToClient(client, ERR_CHANOPRIVSNEEDED(client.getNick(), channelName));
-		return;
-	}
+void Server::sendToClient(Client client, const std::string &message)
+{
+	std::string response = message + "\r\n";
+	if (send(client.getFd(), response.c_str(), response.size(), 0) == -1)
+		perror("Error sending message to client.");
+	else
+		std::cout << ">> " << message << std::endl;
+}
 
-	Client *targetClient = findClient(target);
-	if (!targetClient || !channel->isClientInChannel(targetClient))
-	{
-		sendToClient(client, ERR_USERNOTINCHANNEL(target, channelName));
-		return;
-	}
+std::vector<std::string> Server::split(const std::string &str)
+{
+	std::vector<std::string> tokens;
+	std::istringstream iss(str);
+	std::string token;
 
-	channel->displayChannelMessageKick(client, reason, target);
+	while (iss >> token)
+		tokens.push_back(token);
 
-	channel->removeClient(targetClient);
+	return (tokens);
 }
