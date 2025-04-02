@@ -22,11 +22,11 @@ bool Server::userIsMemberOfChannel(Client &client, const std::string &channelNam
 
 Channel *Server::getChannelByChannelName(const std::string &channelName)
 {
-	auto it = _channels.find(channelName);
+    auto it = _channels.find(channelName);
 
-	if (it != _channels.end())
-		return &it->second;
-	return nullptr;
+    if (it != _channels.end())
+        return &it->second;
+    return nullptr;
 }
 
 void Server::sendCurrentModes(Client &client, Channel *channel)
@@ -44,12 +44,6 @@ void Server::sendCurrentModes(Client &client, Channel *channel)
 
 void Server::handleMode(Client &client, const std::string &channelName, const std::string &message)
 {
-    if (channelName.empty() || channelName[0] != '#')
-    {
-        std::cout << "ERROR: Invalid channel name" << std::endl;
-        return;
-    }
-
     Channel *channel = getChannelByChannelName(channelName);
     if (!channel)
     {
@@ -57,16 +51,16 @@ void Server::handleMode(Client &client, const std::string &channelName, const st
         return;
     }
 
-    if (message.empty())
-    {
-        std::string currentModes = channel->getMode();
-        std::cout << "DEBUG: Returning current mode: " << currentModes << std::endl;
-        std::string response =
-            ":ircserv(current mode) " + client.getNick() + " MODE " + channel->getChannelName() + " " + currentModes;
+    // if (message.empty())
+    // {
+    //     std::string currentModes = channel->getMode();
+    //     std::cout << "DEBUG: Returning current mode: " << currentModes << std::endl;
+    //     std::string response =
+    //         ":ircserv(current mode) " + client.getNick() + " MODE " + channel->getChannelName() + " " + currentModes;
 
-        sendToClient(client, response);
-        return;
-    }
+    //     sendToClient(client, response);
+    //     return;
+    // }
 
     if (!channel->isOperator(&client))
     {
