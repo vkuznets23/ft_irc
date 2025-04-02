@@ -22,11 +22,11 @@ bool Server::userIsMemberOfChannel(Client &client, const std::string &channelNam
 
 Channel *Server::getChannelByChannelName(const std::string &channelName)
 {
-    auto it = _channels.find(channelName);
+	auto it = _channels.find(channelName);
 
-    if (it != _channels.end())
-        return &it->second;
-    return nullptr;
+	if (it != _channels.end())
+		return &it->second;
+	return nullptr;
 }
 
 void Server::handleMode(Client &client, const std::string &channelName, const std::string &message)

@@ -15,33 +15,9 @@
 #include "../../inc/Channel.hpp"
 #include "../../inc/Message.hpp"
 
-std::string trim(const std::string &str)
+void Server::Kick(Client &client, const std::string &channelName, const std::string &target, const std::string &reason)
 {
-	size_t first = str.find_first_not_of(" \t\r\n");
-	if (first == std::string::npos)
-		return("");
-
-	size_t last = str.find_last_not_of(" \t\r\n");
-	return (str.substr(first, last - first + 1));
-}
-
-void Server::Invite(Client &client, const std::string &nickname, const std::string &channelName)
-{
-
-	Client *invite = findClient(nickname);
-	
-	if (!invite)
-	{
-		sendToClient(client, ERR_NOSUCHNICK(client.getNick(), nickname));
-		return;
-	}
-
-	std::string cleanChannelName = trim(channelName);
-	if (cleanChannelName[0] != '#')
-		cleanChannelName = "#" + cleanChannelName;
-
-	Channel *channel = getChannelByChannelName(cleanChannelName);
-
+	Channel *channel = getChannelByChannelName(channelName);
 	if (!channel)
 	{
 		sendToClient(client, ERR_NOSUCHCHANNEL(client.getNick(), channelName));
@@ -54,19 +30,24 @@ void Server::Invite(Client &client, const std::string &nickname, const std::stri
 		return;
 	}
 
-	if (channel->isClientInChannel(invite))
-	{
-		sendToClient(client, ERR_USERONCHANNEL(client.getNick(), nickname, channelName));
-		return;
-	}
-
-	if (channel->getInviteOnlyState() && !channel->isOperator(&client))
+	if (!channel->isOperator(&client))
 	{
 		sendToClient(client, ERR_CHANOPRIVSNEEDED(client.getNick(), channelName));
 		return;
 	}
 
-	channel->addInvite(nickname);
-	sendToClient(*invite, ":" + client.getNick() + " INVITE " + nickname + " " + cleanChannelName + "\r\n");
-	sendToClient(client, RPL_INVITING(client.getNick(), nickname, cleanChannelName));
+	Client *targetClient = findClient(target);
+	if (!targetClient || !channel->isClientInChannel(targetClient))
+	{
+		sendToClient(client, ERR_USERNOTINCHANNEL(target, channelName));
+		return;
+	}
+
+	std::string kickMsg = ":" + client.getNick() + " KICK " + channelName + " " + target + " :" + reason;
+	for (Client *member : channel->getUsers())
+	{
+		sendToClient(*member, kickMsg);
+	}
+
+	channel->removeClient(targetClient);
 }
