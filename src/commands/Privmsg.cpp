@@ -105,8 +105,12 @@ void Server::Privmsg(Client &client, const std::string &msgtarget, const std::st
 		else
 		{
 			Client *recipient = findClient(target);
+			std::string cleanedMessage = message;
+			cleanedMessage.erase(std::find_if(cleanedMessage.rbegin(), cleanedMessage.rend(), 
+							[](unsigned char ch) { return !std::isspace(ch); }).base(), cleanedMessage.end());
+		
 			if (recipient)
-				sendToClient(*recipient, RPL_PRIVMSG(client.getNick(), target, message));
+				sendToClient(*recipient, RPL_PRIVMSG(client.getNick(), target, cleanedMessage));
 			else
 				sendToClient(client, ERR_NOSUCHNICK(client.getNick(), target));
 		}

@@ -18,11 +18,11 @@
 
 void Server::sendToClient(Client client, const std::string &message)
 {
-    std::string response = message + "\r\n";
-    if (send(client.getFd(), response.c_str(), response.size(), 0) == -1)
-        perror("Error sending message to client.");
-    else
-        std::cout << ">> " << message << std::endl;
+	std::string response = message + "\r\n";
+	if (send(client.getFd(), response.c_str(), response.size(), 0) == -1)
+		perror("Error sending message to client.");
+	else
+		std::cout << ">> " << message << std::endl;
 }
 
 std::vector<std::string> Server::split(const std::string &str)
@@ -109,26 +109,30 @@ void Server::handleClientMessage(Client &client, const std::string &message)
 			}},
 			{"PRIVMSG", [this](Client &c, std::istringstream &iss)
 			{
-				std::string msgtarget, message;
-				iss >> msgtarget;
+				std::string nickname, message;
+				iss >> nickname;
 				std::getline(iss, message);
-				Privmsg(c, msgtarget, message);
+				Privmsg(c, nickname, message);
+			}},
+			{"INVITE", [this](Client &c, std::istringstream &iss)
+			{
+				std::string msgtarget, channelName;
+				iss >> msgtarget;
+				std::getline(iss, channelName);
+				Invite(c, msgtarget, channelName);
 			}},
 			{"MODE", [this](Client &c, std::istringstream &iss)
 			{
 				std::string channelName;
 				std::string modeMessage;
-				// First, get the channel name
 				iss >> channelName;
-
-				// The rest of the string is the mode message
 				std::getline(iss, modeMessage);
 				handleMode(c, channelName, modeMessage);
 			}},
 			{"NAMES", [this](Client &c, std::istringstream &iss)
 			{
 				std::string channelName;
-				iss >> channelName; // Get the channel name
+				iss >> channelName;
 
 				handleNamesCommand(c, channelName);
 			}},

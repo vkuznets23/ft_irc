@@ -46,12 +46,15 @@ const std::string SERVERNAME = "ircserv";
 
 //channel
 #define ERR_NOSUCHCHANNEL(nickname, channel)						":" + SERVERNAME + " 403 " + nickname + " " + channel + " :No such channel"
+#define ERR_TOOMANYCHANNELS(nickname)								":" + SERVERNAME + " 405 " + nickname + " :You have joined too many channels"
 #define ERR_USERNOTINCHANNEL(nickname, channel)						":" + SERVERNAME + " 441 " + nickname + " " + channel + " :They aren't on that channel"
 #define ERR_CHANOPRIVSNEEDED(nickname, channel)						":" + SERVERNAME + " 482 " + nickname + " " + channel + " :You're not channel operator"
 #define ERR_CHANNELISFULL(nickname, channel)						":" + SERVERNAME + " 471 " + nickname + " " + channel + " :Cannot join channel (+l)"
 #define ERR_INVITEONLYCHAN(nickname, channel)						":" + SERVERNAME + " 473 " + nickname + " " + channel + " :Cannot join channel (+i)"
 #define ERR_BANNEDFROMCHAN(nickname, channel)						":" + SERVERNAME + " 474 " + nickname + " " + channel + " :Cannot join channel (+b)"
 #define ERR_BADCHANNELKEY(nickname, channel)						":" + SERVERNAME + " 475 " + nickname + " " + channel + " :Cannot join channel (+k)"
+#define ERR_BADCHANMASK(nickname, channel)							":" + SERVERNAME + " 476 " + nickname + " " + channel + " :Bad Channel Mask"
+#define ERR_BADCHANNELNAME(nickname, channel)						":" + SERVERNAME + " 479 " + nickname + " " + channel + " :Illegal channel name"
 #define RPL_NAMREPLY(nickname, channel)								":" + SERVERNAME + " 353 " + nickname + " @ " + channel + " :@" + nickname
 #define RPL_ENDOFNAMES(nickname, channel)							":" + SERVERNAME + " 366 " + nickname + " " + channel + " :End of /NAMES list"
 #define RPL_YOUREOPER(nickname, channel)							":" + SERVERNAME + " NOTICE " + channel + ":You are now an IRC operator"
@@ -69,7 +72,7 @@ const std::string SERVERNAME = "ircserv";
 #define ERR_NORECIPIENT(nickname, command)							":" + SERVERNAME + " 411 " + nickname + " " + command + " :No recipient given"
 #define ERR_TOOMANYTARGETS(nickname, message)						":" + SERVERNAME + " 407 " + nickname + " :" + message
 #define ERR_CANNOTSENDTOCHAN(nickname, channel)						":" + SERVERNAME + " 404 " + nickname + " " + channel + " :Cannot send to channel"
-#define RPL_PRIVMSG(source, target, message)						":" + source + " PRIVMSG " + target + " :" + message
+#define RPL_PRIVMSG(source, target, message)						":" + source + " PRIVMSG " + target + " " + message
 
 //invite
 #define ERR_USERONCHANNEL(nick, target, channel)					":" + SERVERNAME + " 443 " + nick + " " + target + " " + channel + " :is already on channel"

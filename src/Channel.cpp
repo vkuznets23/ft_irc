@@ -39,7 +39,7 @@ Channel::~Channel() {};
 /******************************** GENERAL CHANNEL GETTERS AND SETTERS ********************************/
 std::string Channel::getChannelName() const { return (_channelName); }
 
-std::string Channel::getChannelPassword() const { return _channelPassword.empty() ? "No password set" : _channelPassword; }
+std::string Channel::getChannelPassword() const { return _channelPassword.empty() ? "" : _channelPassword; }
 void Channel::setChannelPassword(const std::string &password) { _channelPassword = password; }
 void Channel::unsetChannelPassword() { _channelPassword.clear(); }
 
@@ -89,7 +89,7 @@ void Channel::setOperator(Client *client)
 		_operatorList.push_back(client);
 }
 
-Client*	Channel::getOperator() const { return operatorClient; }
+Client*	Channel::getOperator() const { return _operatorClient; }
 bool Channel::isOperator(Client *client) const { return std::find(_operatorList.begin(), _operatorList.end(), client) != _operatorList.end(); }
 
 /******************************** TIMESTAMP ********************************/
@@ -104,7 +104,11 @@ std::string Channel::getTimestamp() const { return _timestamp; }
 /******************************** DISPLAY MESSAGE ********************************/
 void Channel::displayChannelMessage(Client &sender, const std::string &message)
 {
-	std::string fullMsg = ":" + sender.getNick() + " PRIVMSG " + _channelName + " :" + message;
+	std::string cleanedMessage = message;
+	cleanedMessage.erase(std::find_if(cleanedMessage.rbegin(), cleanedMessage.rend(), 
+					[](unsigned char ch) { return !std::isspace(ch); }).base(), cleanedMessage.end());
+
+	std::string fullMsg = ":" + sender.getNick() + " PRIVMSG " + _channelName + " :" + cleanedMessage;
 
 	for (Client *client : _userList)
 	{

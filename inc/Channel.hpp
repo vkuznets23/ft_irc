@@ -32,7 +32,7 @@ class Channel
 		std::vector<Client *>		_userList;
 		std::vector<Client *>		_operatorList;
 		std::string					_timestamp;
-		Client*						operatorClient = nullptr;
+		Client*						_operatorClient = nullptr;
 		std::set<std::string>		_invitedUsers;
 		bool						_isInviteOnly;
 		std::string					_parsedModes;

@@ -9,8 +9,8 @@ void testInviteOnlyMode()
     // Create server, clients, and channel
     Server server;
 
-    Client operatorClient;
-    operatorClient.setNick("operatorClient");
+    Client _operatorClient;
+    _operatorClient.setNick("_operatorClient");
 
     Client regularClient;
     regularClient.setNick("regularClient");
@@ -18,15 +18,15 @@ void testInviteOnlyMode()
     Channel channel("#test_channel");
 
     // Add operator client and regular client
-    channel.addClient(&operatorClient);
+    channel.addClient(&_operatorClient);
     channel.addClient(&regularClient);
 
-    channel.setOperator(&operatorClient);
+    channel.setOperator(&_operatorClient);
 
     // Ensure operator status
-    if (!channel.isOperator(&operatorClient))
+    if (!channel.isOperator(&_operatorClient))
     {
-        std::cout << "[FAIL] operatorClient is not recognized as an operator!" << std::endl;
+        std::cout << "[FAIL] _operatorClient is not recognized as an operator!" << std::endl;
         return;
     }
 
@@ -34,7 +34,7 @@ void testInviteOnlyMode()
     std::vector<std::string> params;
     channel.setParsedParameters(params);
     channel.setParsedModes("+i");
-    server.executeModes(operatorClient, &channel);
+    server.executeModes(_operatorClient, &channel);
 
     if (channel.getInviteOnlyState())
         std::cout << "[PASS] Channel is now invite-only." << std::endl;
