@@ -80,16 +80,16 @@ const std::string SERVERNAME = "ircserv";
 #define RPL_INVITING(nick, target, channel)							":" + SERVERNAME + " 341 " + nick + " " + target + " " + channel
 
 
-#define RPL_AVAILABLECMD(nickname) \
+#define RPL_AVAILABLECMD(nickname) "\n"\
     ":" + SERVERNAME + " NOTICE " + nickname + " :Available commands:" + "\n" \
     ":" + SERVERNAME + " NOTICE " + nickname + " :  NICK     - Change your nickname" + "\n" \
     ":" + SERVERNAME + " NOTICE " + nickname + " :  JOIN     - Join a channel" + "\n" \
     ":" + SERVERNAME + " NOTICE " + nickname + " :  PART     - Leave a channel" + "\n" \
-    ":" + SERVERNAME + " NOTICE " + nickname + " :  PRIVMSG  - Send a message to a user or channel" + "\n" \
+    ":" + SERVERNAME + " NOTICE " + nickname + " :  MSG      - Send a message to a user or channel" + "\n" \
     ":" + SERVERNAME + " NOTICE " + nickname + " :  MODE     - Set user or channel modes" + "\n" \
     ":" + SERVERNAME + " NOTICE " + nickname + " :  TOPIC    - View or change channel topic" + "\n" \
     ":" + SERVERNAME + " NOTICE " + nickname + " :  QUIT     - Disconnect from the server" + "\n" \
     ":" + SERVERNAME + " NOTICE " + nickname + " :  INVITE   - Invite a user to a channel" + "\n" \
     ":" + SERVERNAME + " NOTICE " + nickname + " :  KICK     - Remove a user from a channel" + "\n" \
     ":" + SERVERNAME + " NOTICE " + nickname + " :  HELP     - Show this help message" + "\n" \
-    ":" + SERVERNAME + " NOTICE " + nickname + " :Type HELP <command> for more information about a specific command"
+    ":" + SERVERNAME + " NOTICE " + nickname + " :Type HELP <command> for more information about a specific command\n"

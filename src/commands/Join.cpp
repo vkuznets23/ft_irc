@@ -109,7 +109,6 @@ void Server::Join(Client &client, std::string &channels, std::string &password)
 
 			std::string topic = channel.getTopic();
 			sendToClient(client, topic.empty() ? RPL_NOTOPIC(channelName) : RPL_TOPIC(channelName, topic));
-			sendToClient(client, RPL_AVAILABLECMD(client.getNick()));
 			return;
 		}
 

@@ -39,7 +39,7 @@ std::vector<std::string> Server::split(const std::string &str)
 
 void Server::handleClientMessage(Client &client, const std::string &message)
 {
-    std::cout << "Received message: " << message << std::endl;
+    std::cout << std::endl << "Received message: " << message;
 
     if (client.getState() == REGISTERING)
     {

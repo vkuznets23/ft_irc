@@ -15,6 +15,16 @@
 #include "../../inc/Channel.hpp"
 #include "../../inc/Message.hpp"
 
+std::string trim(const std::string &str)
+{
+	size_t first = str.find_first_not_of(" \t\r\n");
+	if (first == std::string::npos)
+		return("");
+
+	size_t last = str.find_last_not_of(" \t\r\n");
+	return (str.substr(first, last - first + 1));
+}
+
 void Server::Invite(Client &inviter, const std::string &nickname, const std::string &channelName)
 {
 
@@ -26,7 +36,12 @@ void Server::Invite(Client &inviter, const std::string &nickname, const std::str
 		return;
 	}
 
-	Channel *channel = getChannelByChannelName(channelName);
+	std::string cleanChannelName = trim(channelName);
+	if (cleanChannelName[0] != '#')
+		cleanChannelName = "#" + cleanChannelName;
+
+	Channel *channel = getChannelByChannelName(cleanChannelName);
+
 	if (!channel)
 	{
 		sendToClient(inviter, ERR_NOSUCHCHANNEL(inviter.getNick(), channelName));
@@ -52,6 +67,6 @@ void Server::Invite(Client &inviter, const std::string &nickname, const std::str
 	}
 
 	channel->addInvite(nickname);
-	sendToClient(inviter, RPL_INVITING(inviter.getNick(), nickname, channelName));
-	sendToClient(*invite, ":" + inviter.getNick() + " INVITE " + nickname + " " + channelName + "\r\n");
+	sendToClient(*invite, ":" + inviter.getNick() + " INVITE " + nickname + " " + cleanChannelName + "\r\n");
+	sendToClient(inviter, RPL_INVITING(inviter.getNick(), nickname, cleanChannelName));
 }
