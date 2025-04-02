@@ -5,8 +5,6 @@
 void Server::handleMode(char sign, char mode, Channel *channel, const std::vector<std::string> &parameters, int &i,
                         std::string &setModes, std::string &setParameters)
 {
-    if (!channel->getInviteOnlyState())
-        std::cout << "bitch" << std::endl;
     switch (mode)
     {
     // USAGE: /MODE #channel_name +i / -i
@@ -15,7 +13,7 @@ void Server::handleMode(char sign, char mode, Channel *channel, const std::vecto
         {
             if (!channel->getInviteOnlyState())
             {
-                std::cout << "+i mode" << std::endl;
+                std::cout << "DEBUG: +i mode" << std::endl;
                 channel->setInviteOnly();
                 setModes += "+i";
             }
@@ -24,14 +22,37 @@ void Server::handleMode(char sign, char mode, Channel *channel, const std::vecto
         {
             if (channel->getInviteOnlyState())
             {
-                std::cout << "-i mode" << std::endl;
+                std::cout << "DEBUG: -i mode" << std::endl;
                 channel->unsetInviteOnly();
                 setModes += "-i";
             }
         }
         break;
+    case 'k':
+        // USAGE: /MODE #channel_name +k password
+        if (sign == '+')
+        {
+            std::cout << "DEBUG: +k mode" << std::endl;
+            channel->setChannelPassword(parameters[i]);
+            setModes += "+k";
+            if (setParameters.empty())
+                setParameters += parameters[i];
+            else
+                setParameters += " " + parameters[i];
+            i++;
+        }
+        else if (sign == '-')
+        {
+            if (!channel->getChannelPassword().empty())
+            {
+                channel->setChannelPassword("");
+                setModes += "-k";
+            }
+        }
+        break;
 
     case 'o':
+        // USAGE: /MODE #channel_name +o user
         if (sign == '+')
         {
             Client *addOperator = getClientByNickname(parameters[i]);
