@@ -41,7 +41,9 @@ void Server::Topic(Client &client, const std::string &channelName, const std::st
 		if (channel.getTopic().empty())
 			sendToClient(client, RPL_NOTOPIC(channelName));
 		else
-			sendToClient(client, RPL_TOPIC(channelName, channel.getTopic()));
+		{
+			sendToClient(client, RPL_TOPIC(client.getNick(), channelName, newTopic));
+		}
 		return;
 	}
 
@@ -57,10 +59,14 @@ void Server::Topic(Client &client, const std::string &channelName, const std::st
 		return;
 	}
 
-	channel.setTopic(newTopic);
 
-	for (Client *member : channel.getClients())
-	{
-		sendToClient(*member, RPL_NEWTOPIC(channelName, channel.getTopic()));
-	}
+	std::string cleanedTopic = newTopic;
+	if (!cleanedTopic.empty() && cleanedTopic[1] == ':')
+    	cleanedTopic.erase(0, 2);
+	cleanedTopic.erase(std::find_if(cleanedTopic.rbegin(), cleanedTopic.rend(), 
+					[](unsigned char ch) { return !std::isspace(ch); }).base(), cleanedTopic.end());
+
+	channel.setTopic(cleanedTopic);
+	sendToClient(client, RPL_TOPIC(client.getNick(), channelName, cleanedTopic));
+	channel.displayChannelMessageTopic(client, cleanedTopic);
 }

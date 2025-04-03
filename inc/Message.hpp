@@ -42,7 +42,7 @@ const std::string SERVERNAME = "ircserv";
 
 //topic
 #define RPL_NOTOPIC(channel)										":" + SERVERNAME + " NOTICE " + channel + " :No topic is set"
-#define RPL_TOPIC(channel, topic)									":" + SERVERNAME + " NOTICE " + channel + " :" + topic 
+#define RPL_TOPIC(nickname, channel, topic)							":" + SERVERNAME + " 332 " + nickname + " " + channel + " :" + topic 
 #define RPL_NEWTOPIC(channel, topic)								":" + SERVERNAME + " NOTICE Topic for " + channel + " changed to :" + topic 
 
 //channel

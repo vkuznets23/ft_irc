@@ -136,6 +136,24 @@ void Channel::displayChannelMessageKick(Client &sender, const std::string &messa
 	}
 }
 
+void Channel::displayChannelMessageTopic(Client &sender, const std::string &message)
+{
+	std::string cleanedMessage = message;
+
+	cleanedMessage.erase(std::find_if(cleanedMessage.rbegin(), cleanedMessage.rend(), 
+					[](unsigned char ch) { return !std::isspace(ch); }).base(), cleanedMessage.end());
+
+	std::string fullMsg = ":" + sender.getNick() + " TOPIC " + _channelName + " " + cleanedMessage;
+
+	for (Client *client : _userList)
+	{
+		if (client != &sender)
+		{
+			Server::sendToClient(*client, fullMsg);
+		}
+	}
+}
+
 /******************************** INVITE ********************************/
 void Channel::addInvite(const std::string &nickname)
 {
