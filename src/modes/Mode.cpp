@@ -42,8 +42,12 @@ void Server::sendCurrentModes(Client &client, Channel *channel)
     sendToClient(client, response);
 }
 
-void Server::handleMode(Client &client, const std::string &channelName, const std::string &message)
+void Server::processModeCommand(Client &client, const std::string &channelName, const std::string &modeMessage)
 {
+    // to prevent entering MODE functions for "Received message: MODE vkuznets +i"
+    if (channelName[0] != '#')
+        return;
+
     Channel *channel = getChannelByChannelName(channelName);
     if (!channel)
     {
@@ -51,24 +55,21 @@ void Server::handleMode(Client &client, const std::string &channelName, const st
         return;
     }
 
-    // if (message.empty())
-    // {
-    //     std::string currentModes = channel->getMode();
-    //     std::cout << "DEBUG: Returning current mode: " << currentModes << std::endl;
-    //     std::string response =
-    //         ":ircserv(current mode) " + client.getNick() + " MODE " + channel->getChannelName() + " " + currentModes;
-
-    //     sendToClient(client, response);
-    //     return;
-    // }
-
     if (!channel->isOperator(&client))
     {
         sendToClient(client, ERR_CHANOPRIVSNEEDED(client.getNick(), channelName));
         return;
     }
 
+    if (modeMessage.empty())
+    {
+        Server::sendCurrentModes(client, getChannelByChannelName(channelName));
+        return;
+    }
+
     // Check for valid mode changes and execute if valid
-    if (checkForValidModes(message, client, channel))
+    if (checkForValidModes(modeMessage, client, channel))
         executeModes(client, channel);
+    else
+        sendToClient(client, ERR_UNKNOWNMODE(client.getNick(), modeMessage));
 }

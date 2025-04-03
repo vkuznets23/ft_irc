@@ -12,6 +12,7 @@
 
 #include "../../inc/Channel.hpp"
 #include "../../inc/Client.hpp"
+#include "../../inc/Message.hpp"
 #include "../../inc/Server.hpp"
 #include "../../inc/Message.hpp"
 

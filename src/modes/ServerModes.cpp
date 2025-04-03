@@ -65,6 +65,18 @@ void Server::handleMode(char sign, char mode, Channel *channel, const std::vecto
                 setParameters += " " + parameters[i];
             i++;
         }
+        else if (sign == '-')
+        {
+            Client *removeOperator = getClientByNickname(parameters[i]);
+            channel->unsetOperator(removeOperator);
+            std::cout << parameters[i] << " unset from operators" << std::endl;
+            setModes += "-o";
+            if (setParameters.empty())
+                setParameters += parameters[i];
+            else
+                setParameters += " " + parameters[i];
+            i++;
+        }
         break;
 
         // Add other modes (e.g., 'k', 'l') here with similar logic if required
