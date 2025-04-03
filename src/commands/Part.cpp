@@ -43,8 +43,8 @@ void Server::Part(Client &client, const std::string &channelName, std::string me
 
 		if (!clients.empty())
 		{
-			channel.setOperator(clients.front());
-			sendToClient(*clients.front(), RPL_YOUREOPER(clients.front()->getNick(), channelName));
+			channel.setOperator(clients.back());
+			sendToClient(*clients.back(), RPL_YOUREOPER(clients.back()->getNick(), channelName));
 		}
 		else
 		{
