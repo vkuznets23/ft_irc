@@ -51,11 +51,11 @@ class Channel
     void setTimestamp();
     std::string getTimestamp() const;
 
-	// Client Methods
-	void					addClient(Client &client);
-	void					removeClient(Client *client);
-	bool					isClientInChannel(Client *client);
-	std::vector<Client *>	&getUsers();
+    // Client Methods
+    void addClient(Client &client);
+    void removeClient(Client *client);
+    bool isClientInChannel(Client *client);
+    std::vector<Client *> &getUsers();
 
     // Operator Methods
     void setOperator(Client *client);
@@ -63,10 +63,10 @@ class Channel
     Client *getOperator() const;
     bool isOperator(Client *client) const;
 
-	// Display message to all clients in the channel
-	void displayChannelMessagePrivMsg(Client &sender, const std::string &message);
-	void displayChannelMessageKick(Client &sender, const std::string &message, const std::string &target);
-	void displayChannelMessageTopic(Client &sender, const std::string &message);
+    // Display message to all clients in the channel
+    void displayChannelMessagePrivMsg(Client &sender, const std::string &message);
+    void displayChannelMessageKick(Client &sender, const std::string &message, const std::string &target);
+    void displayChannelMessageTopic(Client &sender, const std::string &message);
 
     // Invite
     void addInvite(const std::string &nickname);
@@ -116,5 +116,11 @@ class Channel
     std::string getParsedModes()
     {
         return (_parsedModes);
+    }
+
+    // DELETE/DEBUG
+    std::vector<Client *> getOperatorList() const
+    {
+        return _operatorList; // Returns the list of operators
     }
 };
