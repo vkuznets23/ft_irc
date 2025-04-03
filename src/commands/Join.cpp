@@ -125,7 +125,6 @@ void Server::Join(Client &client, std::string &channels, std::string &password)
 
 		sendToClient(client, RPL_JOIN(client.getNick(), client.getUserName(), client.getHostName(), channelName));
 		handleNamesCommand(client, channelName);
-		sendToClient(client, RPL_ENDOFNAMES(client.getNick(), channelName));
 		return;
 	}
 }

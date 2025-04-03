@@ -37,14 +37,13 @@ void Server::Part(Client &client, const std::string &channelName, std::string me
 		sendToClient(*member, RPL_PART(client.getNick(), client.getUserName(), client.getHostName(), channelName, message));
 	}
 
-	channel.removeClient(&client);
-
 	if (channel.getOperator() == &client)
 	{
 		std::vector<Client *> clients = channel.getUsers();
+
 		if (!clients.empty())
 		{
-			channel.setOperator(clients.back());
+			channel.setOperator(clients.front());
 			sendToClient(*clients.front(), RPL_YOUREOPER(clients.front()->getNick(), channelName));
 		}
 		else
@@ -53,4 +52,10 @@ void Server::Part(Client &client, const std::string &channelName, std::string me
 			return;
 		}
 	}
+
+	channel.removeClient(&client);
+
+	if (channel.getUsers().empty())
+		_channels.erase(it);
+
 }
