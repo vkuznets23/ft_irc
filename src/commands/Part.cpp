@@ -32,7 +32,7 @@ void Server::Part(Client &client, const std::string &channelName, std::string me
 		return;
 	}
 
-	for (Client *member : channel.getClients())
+	for (Client *member : channel.getUsers())
 	{
 		sendToClient(*member, RPL_PART(client.getNick(), client.getUserName(), client.getHostName(), channelName, message));
 	}
@@ -41,7 +41,7 @@ void Server::Part(Client &client, const std::string &channelName, std::string me
 
 	if (channel.getOperator() == &client)
 	{
-		std::vector<Client *> clients = channel.getClients();
+		std::vector<Client *> clients = channel.getUsers();
 		if (!clients.empty())
 		{
 			channel.setOperator(clients.back());

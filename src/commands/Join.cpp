@@ -52,11 +52,11 @@ bool Server::checkChannelType(Client &client, Channel &channel, const std::strin
 
 	if (channel.getUserLimit() != -1 && channel.getUserCount() >= channel.getUserLimit() && !channel.isOperator(&client))
 	{
-		sendToClient(client, ERR_INVITEONLYCHAN(client.getNick(), channelName));
+		sendToClient(client, ERR_CHANNELISFULL(client.getNick(), channelName));
 		return (false);
 	}
 
-	if (!password.empty() && !channel.getChannelPassword().empty() && channel.getChannelPassword() != password)
+	if (!channel.getChannelPassword().empty() && channel.getChannelPassword() != password)
 	{
 		sendToClient(client, ERR_BADCHANNELKEY(client.getNick(), channelName));
 		return (false);
@@ -64,7 +64,6 @@ bool Server::checkChannelType(Client &client, Channel &channel, const std::strin
 
 	return (true);
 }
-
 
 /**
  * This function handles a client joining one or more channels. 
@@ -74,7 +73,6 @@ bool Server::checkChannelType(Client &client, Channel &channel, const std::strin
 
 void Server::Join(Client &client, std::string &channels, std::string &password)
 {
-	(void) password;
 	if (channels.empty())
 	{
 		sendToClient(client, "\r\n");
@@ -83,7 +81,6 @@ void Server::Join(Client &client, std::string &channels, std::string &password)
 
 	std::stringstream ss(channels);
 	std::string channelName;
-
 	while (std::getline(ss, channelName, ','))
 	{
 		if (!isChannelValid(client, channelName))
@@ -100,12 +97,10 @@ void Server::Join(Client &client, std::string &channels, std::string &password)
 			channel.addClient(client);
 			channel.removeInvite(client.getNick());
 
-			for (Client *member : channel.getClients())
-			{
+			for (Client *member : channel.getUsers())
 				sendToClient(*member, RPL_JOIN(client.getNick(), client.getUserName(), client.getHostName(), channelName));
-				sendToClient(*member, RPL_NAMREPLY(client.getNick(), channelName));
-				sendToClient(*member, RPL_ENDOFNAMES(client.getNick(), channelName));
-			}
+
+			handleNamesCommand(client, channelName);
 
 			std::string topic = channel.getTopic();
 			sendToClient(client, topic.empty() ? RPL_NOTOPIC(channelName) : RPL_TOPIC(client.getNick(), channelName, topic));
@@ -129,7 +124,7 @@ void Server::Join(Client &client, std::string &channels, std::string &password)
 			createdChannel.setChannelPassword(password);
 
 		sendToClient(client, RPL_JOIN(client.getNick(), client.getUserName(), client.getHostName(), channelName));
-		sendToClient(client, RPL_NAMREPLY(client.getNick(), channelName));
+		handleNamesCommand(client, channelName);
 		sendToClient(client, RPL_ENDOFNAMES(client.getNick(), channelName));
 		return;
 	}

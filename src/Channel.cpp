@@ -74,7 +74,7 @@ int Channel::getUserCount() const
     return _userList.size();
 }
 
-std::vector<Client *> Channel::getClients() const { return _userList; }
+std::vector<Client *> &Channel::getUsers() { return (_userList); }
 
 /******************************** TOPIC METHODS (OPERATOR) ********************************/
 std::string Channel::getTopic() const { return _topic; }

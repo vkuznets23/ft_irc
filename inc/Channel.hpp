@@ -55,7 +55,7 @@ class Channel
 		void					addClient(Client &client);
 		void					removeClient(Client *client);
 		bool					isClientInChannel(Client *client);
-		std::vector<Client *>	getClients() const;
+		std::vector<Client *>	&getUsers();
 
 		// Operator Methods
 		void	setOperator(Client *client);
@@ -101,5 +101,4 @@ class Channel
 		void setParsedParameters(std::vector<std::string> parameters) { _parsedParameters = parameters; }
 		void setParsedModes(std::string modes) { _parsedModes = modes; }
 		std::string getParsedModes() { return (_parsedModes); }
-		std::vector<Client *> &getUsers() { return (_userList); }
 };

@@ -32,7 +32,7 @@ void Server::Quit(Client &client, std::string message)
 
 	for (Channel *channel : joinedChannels)
 	{
-		std::vector<Client *> members = channel->getClients();
+		std::vector<Client *> members = channel->getUsers();
 
 		for (Client *member : members)
 		{
