@@ -1,5 +1,6 @@
 #include "../../inc/Channel.hpp"
 #include "../../inc/Client.hpp"
+#include "../../inc/Message.hpp"
 #include "../../inc/Server.hpp"
 
 void Server::handleNamesCommand(Client &client, const std::string &channelName)
@@ -8,7 +9,7 @@ void Server::handleNamesCommand(Client &client, const std::string &channelName)
 
     if (!channel)
     {
-        sendToClient(client, ":ircserv 403 " + client.getNick() + " " + channelName + " :No such channel");
+        sendToClient(client, ERR_NOSUCHCHANNEL(client.getNick(), channelName));
         return;
     }
 
@@ -17,12 +18,12 @@ void Server::handleNamesCommand(Client &client, const std::string &channelName)
     for (Client *member : channel->getUsers())
     {
         if (channel->isOperator(member))
-            userList += "@" + member->getNick() + " "; // '@' means the user is an operator
+            userList += "@" + member->getNick() + " ";
         else
             userList += member->getNick() + " ";
     }
 
     // Send responses
-    sendToClient(client, ":ircserv 353 " + client.getNick() + " = " + channelName + " :" + userList);
-    sendToClient(client, ":ircserv 366 " + client.getNick() + " " + channelName + " :End of /NAMES list");
+    // sendToClient(client, RPL_NAMREPLY(client.getNick(), " = ", channelName, userList));
+    sendToClient(client, RPL_ENDOFNAMES(client.getNick(), channelName));
 }
