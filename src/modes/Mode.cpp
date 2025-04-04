@@ -31,7 +31,6 @@ Channel *Server::getChannelByChannelName(const std::string &channelName)
 
 void Server::processModeCommand(Client &client, const std::string &channelName, const std::string &modeMessage)
 {
-    // to prevent entering MODE functions for "Received message: MODE vkuznets +i"
     if (channelName[0] != '#')
         return;
 

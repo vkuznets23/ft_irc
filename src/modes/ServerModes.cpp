@@ -22,98 +22,79 @@ void printOperatorList(Channel *channel) // DELETE DEGUG
     }
 }
 
-void Server::handleMode(char sign, char mode, Channel *channel, const std::vector<std::string> &parameters, int &i,
-                        std::string &setModes, std::string &setParameters)
+void Server::handlePlusModes(Channel *channel, char mode, const std::vector<std::string> &parameters, int &i,
+                             std::string &setModes, std::string &setParameters)
 {
     switch (mode)
     {
-    // USAGE: /MODE #channel_name +i / -i
     case 'i':
-        if (sign == '+')
+        if (!channel->getInviteOnlyState())
         {
-            if (!channel->getInviteOnlyState())
-            {
-                channel->setInviteOnly();
-                setModes += "+i";
-            }
-        }
-        else if (sign == '-')
-        {
-            if (channel->getInviteOnlyState())
-            {
-                channel->unsetInviteOnly();
-                setModes += "-i";
-            }
+            channel->setInviteOnly();
+            setModes += "+i";
         }
         break;
     case 'k':
         // USAGE: /MODE #channel_name +k password
-        if (sign == '+')
-        {
-            channel->setChannelPassword(parameters[i]);
-            setModes += "+k";
-            if (setParameters.empty())
-                setParameters += parameters[i];
-            else
-                setParameters += " " + parameters[i];
-            i++;
-        }
-        else if (sign == '-')
-        {
-            if (!channel->getChannelPassword().empty())
-            {
-                channel->setChannelPassword("");
-                setModes += "-k";
-            }
-        }
+        channel->setChannelPassword(parameters[i]);
+        setModes += "+k";
+        if (setParameters.empty())
+            setParameters += parameters[i];
+        else
+            setParameters += " " + parameters[i];
+        i++;
         break;
-
     case 'o':
-        // USAGE: /MODE #channel_name +o user
-        if (sign == '+')
+        Client *addOperator = getClientByNickname(parameters[i]);
+        if (!channel->isOperator(addOperator))
         {
-            Client *addOperator = getClientByNickname(parameters[i]);
-            if (!channel->isOperator(addOperator))
-            {
-                channel->setOperator(addOperator);
-
-                // Not sure if i need this
-                sendToClient(*addOperator, RPL_YOUREOPER(addOperator->getNick()));
-                
-                if (setModes.find("+o") == std::string::npos)
-                    setModes += "+o";
-            }
-            else
-            {
-                std::cout << parameters[i] << " is already an operator" << std::endl;
-            }
+            channel->setOperator(addOperator);
+            setModes += "+o";
             if (setParameters.empty())
                 setParameters += parameters[i];
             else
                 setParameters += " " + parameters[i];
-            i++;
         }
-        else if (sign == '-')
+        i++;
+        break;
+    }
+}
+
+void Server::handleMinusModes(Channel *channel, char mode, const std::vector<std::string> &parameters, int &i,
+                              std::string &setModes, std::string &setParameters)
+{
+    switch (mode)
+    {
+    case 'i':
+        if (channel->getInviteOnlyState())
         {
-            Client *removeOperator = getClientByNickname(parameters[i]);
-            if (channel->isOperator(removeOperator))
-            {
-                channel->unsetOperator(removeOperator);
-                setModes += "-o";
-            }
-            else
-            {
-                std::cout << parameters[i] << " is not an operator" << std::endl;
-            }
-            if (setParameters.empty())
-                setParameters += parameters[i];
-            else
-                setParameters += " " + parameters[i];
-            i++;
+            channel->unsetInviteOnly();
+            setModes += "-i";
         }
         break;
+    case 'k':
+        channel->unsetChannelPassword();
+        setModes += "-k";
+        if (setParameters.empty())
+            setParameters += parameters[i];
+        else
+            setParameters += " " + parameters[i];
+        i++;
+        break;
+    case 'o':
+        Client *removeOperator = getClientByNickname(parameters[i]);
+        if (channel->isOperator(removeOperator))
+        {
+            channel->unsetOperator(removeOperator);
 
-        // Add other modes (e.g., 'k', 'l') here with similar logic if required
+            setModes += "-o";
+            if (setParameters.empty())
+                setParameters += parameters[i];
+            else
+                setParameters += " " + parameters[i];
+        }
+        i++;
+        break;
     }
 }
 
@@ -148,20 +129,23 @@ void Server::executeModes(Client &client, Channel *channel)
     std::string setModes;
     std::string setParameters;
     int i = 0;
+    char currentSign;
+
     std::vector<std::string> parameters = channel->getParsedParameters();
     std::string modes = channel->getParsedModes();
 
-    for (size_t j = 0; j < modes.size(); ++j)
+    for (char c : modes)
     {
-        char sign = modes[j];
-        if (sign == '+' || sign == '-')
+        if (c == '+' || c == '-')
         {
-            // Ensure there's a mode character to process
-            if (j + 1 < modes.size())
-            {
-                handleMode(sign, modes[j + 1], channel, parameters, i, setModes, setParameters);
-                j++; // Skip next character as it's the mode character (e.g., 'o', 'i', etc.)
-            }
+            currentSign = c;
+        }
+        else
+        {
+            if (currentSign == '+')
+                handlePlusModes(channel, c, parameters, i, setModes, setParameters);
+            else if (currentSign == '-')
+                handleMinusModes(channel, c, parameters, i, setModes, setParameters);
         }
     }
 
