@@ -132,7 +132,7 @@ void Server::executeModes(Client &client, Channel *channel)
     }
 
     setModes = compressModes(setModes);
-    response = ":ircserv(execut) " + client.getNick() + " " + "MODE" + " " + channel->getChannelName() + " " + setModes;
+    response = ":" + client.getNick() + " " + "MODE" + " " + channel->getChannelName() + " " + setModes;
 
     if (!setParameters.empty())
         response += " " + setParameters;

@@ -32,7 +32,6 @@ class Channel
     std::vector<Client *> _userList;
     std::vector<Client *> _operatorList;
     std::string _timestamp;
-    Client *_operatorClient = nullptr;
     std::set<std::string> _invitedUsers;
     bool _isInviteOnly;
     std::string _parsedModes;
@@ -60,8 +59,8 @@ class Channel
     // Operator Methods
     void setOperator(Client *client);
     void unsetOperator(Client *client);
-    Client *getOperator() const;
     bool isOperator(Client *client) const;
+	size_t countOperators() const;
 
 	// Display message to all clients in the channel
 	void displayChannelMessagePrivMsg(Client &sender, const std::string &message);

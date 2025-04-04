@@ -27,19 +27,32 @@
 void Server::Quit(Client &client, std::string message)
 {
 	std::vector<Channel *> joinedChannels = client.getJoinedChannels();
-
-	sendToClient(client, RPL_QUIT(client.getNick(), client.getUserName(), client.getHostName(), message));
+	const std::string nick = client.getNick();
 
 	for (Channel *channel : joinedChannels)
 	{
-		std::vector<Client *> members = channel->getUsers();
+		Part(client, channel->getChannelName(), message);
+	}
 
-		for (Client *member : members)
+	sendToClient(client, RPL_QUIT(nick, client.getUserName(), client.getHostName(), message));
+	close(client.getFd());
+
+	Client *clientToDelete = nullptr;
+
+	for (std::vector<Client *>::iterator it = _clients.begin(); it != _clients.end(); ++it)
+	{
+		if (*it == &client)
 		{
-			if (member == &client)
-			{
-				channel->removeClient(&client);
-			}
+			clientToDelete = *it;
+			_clients.erase(it);
+			break;
 		}
 	}
+
+	if (clientToDelete)
+	{
+		delete (clientToDelete);
+	}
+
+	std::cout << "Client " << nick << " removed from server." << std::endl;
 }

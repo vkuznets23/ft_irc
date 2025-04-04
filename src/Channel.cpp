@@ -118,25 +118,25 @@ bool Channel::isTopicRestricted() const
 /******************************** OPERATORS ********************************/
 void Channel::setOperator(Client *client)
 {
-    auto it = std::find(_operatorList.begin(), _operatorList.end(), client);
-    if (it == _operatorList.end())
-        _operatorList.push_back(client);
+	auto it = std::find(_operatorList.begin(), _operatorList.end(), client);
+	if (it == _operatorList.end())
+		_operatorList.push_back(client);
 }
 
 void Channel::unsetOperator(Client *client)
 {
-    auto it = std::find(_operatorList.begin(), _operatorList.end(), client);
-    if (it == _operatorList.end())
-        _operatorList.erase(it);
-}
-
-Client *Channel::getOperator() const
-{
-    return _operatorClient;
+	auto it = std::find(_operatorList.begin(), _operatorList.end(), client);
+	if (it == _operatorList.end())
+		_operatorList.erase(it);
 }
 bool Channel::isOperator(Client *client) const
 {
     return std::find(_operatorList.begin(), _operatorList.end(), client) != _operatorList.end();
+}
+
+size_t Channel::countOperators() const
+{
+    return (_operatorList.size());
 }
 
 /******************************** TIMESTAMP ********************************/

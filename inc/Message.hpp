@@ -58,7 +58,7 @@ const std::string SERVERNAME = "ircserv";
 #define ERR_BADCHANNELNAME(nickname, channel)						":" + SERVERNAME + " 479 " + nickname + " " + channel + " :Illegal channel name"
 #define RPL_NAMREPLY(nickname, channel, symbol, list)				":" + SERVERNAME + " 353 " + nickname + " " + symbol + " " + channel + " :" + list
 #define RPL_ENDOFNAMES(nickname, channel)							":" + SERVERNAME + " 366 " + nickname + " " + channel + " :End of /NAMES list"
-#define RPL_YOUREOPER(nickname, channel)							":" + SERVERNAME + " 381 " + nickname + " " + channel + ":You are now an IRC operator"
+#define RPL_YOUREOPER(nickname)										":" + SERVERNAME + " 381 " + nickname + " :You are now an IRC operator"
 #define ERR_UNKNOWNMODE(nickname, mode)								":" + SERVERNAME + " 472 " + nickname + " " + mode + " :Is unknown mode char to me"
 
 //join
