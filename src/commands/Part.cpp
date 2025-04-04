@@ -56,6 +56,7 @@ void Server::Part(Client &client, const std::string &channelName, std::string me
 				if (potentialOp != &client)
 				{
 					channel.setOperator(potentialOp);
+					channel.unsetOperator(&client);
 					channel.displayChannelMessagePart(potentialOp, &client);
 					sendToClient(*potentialOp, RPL_YOUREOPER(potentialOp->getNick()));
 					break;

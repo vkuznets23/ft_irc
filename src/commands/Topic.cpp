@@ -42,7 +42,7 @@ void Server::Topic(Client &client, const std::string &channelName, const std::st
 			sendToClient(client, RPL_NOTOPIC(channelName));
 		else
 		{
-			sendToClient(client, RPL_TOPIC(client.getNick(), channelName, newTopic));
+			sendToClient(client, RPL_TOPIC(client.getNick(), channelName, channel.getTopic()));
 		}
 		return;
 	}

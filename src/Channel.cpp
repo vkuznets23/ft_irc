@@ -16,13 +16,16 @@
 /******************************** CONSTRUCTORS ********************************/
 Channel::Channel() {};
 Channel::Channel(std::string name)
-    : _channelName(name), _channelPassword(""), _userLimit(-1), _topicOperatorsOnly(false), _isInviteOnly(false) {};
+    : _channelName(name), _channelPassword(""), _userLimit(-1), _topic(""), _topicOperatorsOnly(false), _isInviteOnly(false) {};
 
 Channel::Channel(const Channel &o)
 {
     this->_channelName = o._channelName;
     this->_channelPassword = o._channelPassword;
     this->_userLimit = o._userLimit;
+    this->_topic = o._topic;
+    this->_topicOperatorsOnly = o._topicOperatorsOnly;
+    this->_isInviteOnly = o._isInviteOnly;
 }
 
 Channel &Channel::operator=(const Channel &o)
@@ -32,6 +35,9 @@ Channel &Channel::operator=(const Channel &o)
         this->_channelName = o._channelName;
         this->_channelPassword = o._channelPassword;
         this->_userLimit = o._userLimit;
+        this->_topic = o._topic;
+        this->_topicOperatorsOnly = o._topicOperatorsOnly;
+        this->_isInviteOnly = o._isInviteOnly;
     }
     return *this;
 }
@@ -135,9 +141,10 @@ void Channel::setOperator(Client *client)
 void Channel::unsetOperator(Client *client)
 {
     auto it = std::find(_operatorList.begin(), _operatorList.end(), client);
-    if (it == _operatorList.end())
+    if (it != _operatorList.end()) 
         _operatorList.erase(it);
 }
+
 bool Channel::isOperator(Client *client) const
 {
     return std::find(_operatorList.begin(), _operatorList.end(), client) != _operatorList.end();
