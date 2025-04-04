@@ -22,6 +22,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <poll.h>
 
 const int BUFFER_SIZE = 1024;
 const int MAX_CLIENTS = 999;
@@ -35,6 +36,7 @@ class Server
     int _port;
     std::string _password;
     std::vector<Client *> _clients;
+	std::vector<struct pollfd> _pollFds;
     std::map<std::string, Channel> _channels;
 
   public:
@@ -65,6 +67,7 @@ class Server
     bool isNickTaken(const std::string &nickname) const;
     bool isValidNick(const std::string &nickname) const;
     void Nick(Client &client, const std::string &nickname);
+	void disablePollfd(int fd);
     void Quit(Client &client, std::string message);
     bool isChannelValid(Client &client, const std::string &channel);
     bool checkChannelType(Client &client, Channel &channel, const std::string &channelName,
@@ -78,6 +81,7 @@ class Server
     void Privmsg(Client &client, const std::string &msgtarget, const std::string &message);
     void Invite(Client &client, const std::string &nickname, const std::string &channelName);
     void Kick(Client &client, const std::string &channelName, const std::string &target, const std::string &reason);
+
     // clean up
     void cleanupResources(int server_fd);
 
@@ -93,7 +97,6 @@ class Server
     void handleMode(char sign, char mode, Channel *channel, const std::vector<std::string> &parameters, int &i,
                     std::string &setModes, std::string &setParameters);
     void processModeCommand(Client &client, const std::string &channelName, const std::string &modeMessage); // NEW
-    void sendCurrentModes(Client &client, Channel *channel);
 };
 
 std::string trim(const std::string &str);

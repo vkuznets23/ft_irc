@@ -95,6 +95,7 @@ void Server::Join(Client &client, std::string &channels, std::string &password)
 				return;
 
 			channel.addClient(client);
+			client.setJoinedChannel(&channel);
 			channel.removeInvite(client.getNick());
 
 			for (Client *member : channel.getUsers())
@@ -114,6 +115,8 @@ void Server::Join(Client &client, std::string &channels, std::string &password)
 
 		Channel &createdChannel = _channels[channelName];
 		createdChannel.addClient(client);
+		client.setJoinedChannel(&createdChannel);
+
 		createdChannel.setOperator(&client);
 		createdChannel.unsetInviteOnly();
 		createdChannel.unsetUserLimit();

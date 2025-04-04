@@ -89,3 +89,16 @@ bool Client::getUserNameOK() {return(_userNameOK); }
 std::string Client::getHostName() const { return(_host); }
 
 std::vector<Channel *> Client::getJoinedChannels() const { return _joinedChannels;}
+void Client::setJoinedChannel(Channel *channel)
+{
+	auto it = std::find(_joinedChannels.begin(), _joinedChannels.end(), channel);
+	if (it == _joinedChannels.end()) 
+		_joinedChannels.push_back(channel);
+}
+void Client::unsetJoinedChannel(Channel *channel)
+{
+    auto it = std::find(_joinedChannels.begin(), _joinedChannels.end(), channel);
+    
+    if (it != _joinedChannels.end()) 
+        _joinedChannels.erase(it);
+}

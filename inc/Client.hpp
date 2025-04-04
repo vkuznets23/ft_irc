@@ -72,5 +72,7 @@ class Client
 		bool getUserNameOK();
 
 		// Channel Methods
-		std::vector<Channel *> getJoinedChannels() const;
+		std::vector<Channel *>	getJoinedChannels() const;
+		void					setJoinedChannel(Channel *channel);
+		void					unsetJoinedChannel(Channel *channel);
 };

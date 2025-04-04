@@ -75,6 +75,7 @@ void Server::Part(Client &client, const std::string &channelName, std::string me
 	}
 	
 	channel.removeClient(&client);
+	client.unsetJoinedChannel(&channel);
 
 	if (channel.getUsers().empty())
 		_channels.erase(it);

@@ -24,6 +24,16 @@
  * while iterating over it by making a copy beforehand.
  */
 
+void Server::disablePollfd(int fd)
+{
+	auto it = find_if(_pollFds.begin(), _pollFds.end(),
+					[fd](struct pollfd& pfd) { return pfd.fd == fd; });
+	if (it != _pollFds.end())
+	{
+		it->fd = -1;
+	}
+}
+
 void Server::Quit(Client &client, std::string message)
 {
 	std::vector<Channel *> joinedChannels = client.getJoinedChannels();
@@ -35,10 +45,11 @@ void Server::Quit(Client &client, std::string message)
 	}
 
 	sendToClient(client, RPL_QUIT(nick, client.getUserName(), client.getHostName(), message));
+
+	disablePollfd(client.getFd());
 	close(client.getFd());
 
 	Client *clientToDelete = nullptr;
-
 	for (std::vector<Client *>::iterator it = _clients.begin(); it != _clients.end(); ++it)
 	{
 		if (*it == &client)
@@ -51,8 +62,10 @@ void Server::Quit(Client &client, std::string message)
 
 	if (clientToDelete)
 	{
-		delete (clientToDelete);
+		delete clientToDelete;
+		clientToDelete = nullptr;
 	}
 
 	std::cout << "Client " << nick << " removed from server." << std::endl;
 }
+
