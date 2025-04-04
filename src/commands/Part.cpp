@@ -38,12 +38,6 @@ void Server::Part(Client &client, const std::string &channelName, std::string me
 		return;
 	}
 
-	if (!(std::find(_clients.begin(), _clients.end(), &client) != _clients.end()))
-	{
-		//sendToClient(client, ERR_USERNOTINCHANNEL(client.getNick()));
-		return;
-	}
-
 	Channel &channel = it->second;
 
 	if (!channel.isClientInChannel(&client))
@@ -62,12 +56,14 @@ void Server::Part(Client &client, const std::string &channelName, std::string me
 				if (potentialOp != &client)
 				{
 					channel.setOperator(potentialOp);
+					channel.displayChannelMessagePart(potentialOp);
 					sendToClient(*potentialOp, RPL_YOUREOPER(potentialOp->getNick()));
 					break;
 				}
 			}
 		}
 	}
+	
 
 	for (Client *member : channel.getUsers())
 	{

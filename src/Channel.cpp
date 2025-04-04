@@ -213,6 +213,19 @@ void Channel::displayChannelMessageTopic(Client &sender, const std::string &mess
     }
 }
 
+void Channel::displayChannelMessagePart(Client *client)
+{
+	std::string fullMsg = ":" + client->getNick() + " MODE " + _channelName + " +o " + client->getNick();
+
+    for (Client *member : _userList)
+    {
+        if (member != client)
+        {
+            Server::sendToClient(*client, fullMsg);
+        }
+    }
+}
+
 /******************************** INVITE ********************************/
 void Channel::addInvite(const std::string &nickname)
 {
