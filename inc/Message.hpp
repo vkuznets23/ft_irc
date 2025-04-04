@@ -17,69 +17,71 @@
 
 const std::string SERVERNAME = "ircserv";
 
-//generic
-#define ERR_NEEDMOREPARAMS(nickname, command)						":" + SERVERNAME + " 461 " + nickname + " " + command + " :Not enough parameters"
-#define ERR_UNKNOWNCOMMAND(nickname, command)						":" + SERVERNAME + " 421 " + nickname + " " + command + " :Unknown command"
+//generic	
+#define ERR_NEEDMOREPARAMS(nickname, command)							":" + SERVERNAME + " 461 " + nickname + " " + command + " :Not enough parameters"
+#define ERR_UNKNOWNCOMMAND(nickname, command)							":" + SERVERNAME + " 421 " + nickname + " " + command + " :Unknown command"
 
-//authentification
-#define RPL_WELCOME(nickname, username, host)						":" + SERVERNAME + " 001 " + nickname + " :Welcome to the Internet Relay Network " + nickname + "!~" + username + "@" + host
+//authentification	
+#define RPL_WELCOME(nickname, username, host)							":" + SERVERNAME + " 001 " + nickname + " :Welcome to the Internet Relay Network " + nickname + "!~" + username + "@" + host
 
-//username
-#define ERR_ALREADYREGISTRED()										":" + SERVERNAME + " 462 :Unauthorized command (already registered)"
+//username	
+#define ERR_ALREADYREGISTRED()											":" + SERVERNAME + " 462 :Unauthorized command (already registered)"
 
-//nickname
-#define RPL_NICKCHANGE(oldnick, username, host, nickname)			":" + oldnick + "!" + username + "@" + host + " NICK :" + nickname
-#define ERR_NOSUCHNICK(nickname, nicktofind)						":" + SERVERNAME + " 401 " + nickname + " " + nicktofind + " :No such nick/channel"
-#define ERR_NONICKNAMEGIVEN(nickname)								":" + SERVERNAME + " 431 " + nickname + " :No nickname given"
-#define ERR_ERRONEUSNICKNAME(nickname)								":" + SERVERNAME + " 432 " + " " + nickname  + " :Erroneous nickname"
-#define ERR_NICKNAMEINUSE(oldnick, nickname)						":" + SERVERNAME + " 433 " + oldnick + " " + nickname  + " :Nickname is already in use"
+//nickname	
+#define RPL_NICKCHANGE(oldnick, username, host, nickname)				":" + oldnick + "!" + username + "@" + host + " NICK :" + nickname
+#define ERR_NOSUCHNICK(nickname, nicktofind)							":" + SERVERNAME + " 401 " + nickname + " " + nicktofind + " :No such nick/channel"
+#define ERR_NONICKNAMEGIVEN(nickname)									":" + SERVERNAME + " 431 " + nickname + " :No nickname given"
+#define ERR_ERRONEUSNICKNAME(nickname)									":" + SERVERNAME + " 432 " + " " + nickname  + " :Erroneous nickname"
+#define ERR_NICKNAMEINUSE(oldnick, nickname)							":" + SERVERNAME + " 433 " + oldnick + " " + nickname  + " :Nickname is already in use"
 
-//password
-#define ERR_PASSWDMISMATCH(nickname)								":" + SERVERNAME + " 464 " + nickname + " :Password is incorrect"
+//password	
+#define ERR_PASSWDMISMATCH(nickname)									":" + SERVERNAME + " 464 " + nickname + " :Password is incorrect"
 
-//quit
-#define RPL_QUIT(nickname, username, hostname, message)				":" + nickname + "!~" + username + "@" + hostname + " QUIT :" + message
+//quit	
+#define RPL_QUIT(nickname, username, hostname, message)					":" + nickname + "!~" + username + "@" + hostname + " QUIT :" + message
 
-//topic
-#define RPL_NOTOPIC(channel)										":" + SERVERNAME + " NOTICE " + channel + " :No topic is set"
-#define RPL_TOPIC(nickname, channel, topic)							":" + SERVERNAME + " 332 " + nickname + " " + channel + " :" + topic 
-#define RPL_NEWTOPIC(channel, topic)								":" + SERVERNAME + " NOTICE Topic for " + channel + " changed to :" + topic 
+//topic	
+#define RPL_NOTOPIC(channel)											":" + SERVERNAME + " NOTICE " + channel + " :No topic is set"
+#define RPL_TOPIC(nickname, channel, topic)								":" + SERVERNAME + " 332 " + nickname + " " + channel + " :" + topic 
+#define RPL_NEWTOPIC(channel, topic)									":" + SERVERNAME + " NOTICE Topic for " + channel + " changed to :" + topic 
 
-//channel
-#define ERR_NOSUCHCHANNEL(nickname, channel)						":" + SERVERNAME + " 403 " + nickname + " " + channel + " :No such channel"
-#define ERR_TOOMANYCHANNELS(nickname)								":" + SERVERNAME + " 405 " + nickname + " :You have joined too many channels"
-#define ERR_USERNOTINCHANNEL(nickname, channel)						":" + SERVERNAME + " 441 " + nickname + " " + channel + " :They aren't on that channel"
-#define ERR_CHANOPRIVSNEEDED(nickname, channel)						":" + SERVERNAME + " 482 " + nickname + " " + channel + " :You're not channel operator"
-#define ERR_CHANNELISFULL(nickname, channel)						":" + SERVERNAME + " 471 " + nickname + " " + channel + " :Cannot join channel (+l)"
-#define ERR_INVITEONLYCHAN(nickname, channel)						":" + SERVERNAME + " 473 " + nickname + " " + channel + " :Cannot join channel (+i)"
-#define ERR_BANNEDFROMCHAN(nickname, channel)						":" + SERVERNAME + " 474 " + nickname + " " + channel + " :Cannot join channel (+b)"
-#define ERR_BADCHANNELKEY(nickname, channel)						":" + SERVERNAME + " 475 " + nickname + " " + channel + " :Cannot join channel (+k)"
-#define ERR_BADCHANMASK(nickname, channel)							":" + SERVERNAME + " 476 " + nickname + " " + channel + " :Bad Channel Mask"
-#define ERR_BADCHANNELNAME(nickname, channel)						":" + SERVERNAME + " 479 " + nickname + " " + channel + " :Illegal channel name"
-#define RPL_NAMREPLY(nickname, channel, symbol, list)				":" + SERVERNAME + " 353 " + nickname + " " + symbol + " " + channel + " :" + list
-#define RPL_ENDOFNAMES(nickname, channel)							":" + SERVERNAME + " 366 " + nickname + " " + channel + " :End of /NAMES list"
-#define RPL_YOUREOPER(nickname)										":" + SERVERNAME + " 381 " + nickname + " :You are now an IRC operator"
-#define ERR_UNKNOWNMODE(nickname, mode)								":" + SERVERNAME + " 472 " + nickname + " " + mode + " :Is unknown mode char to me"
+//channel	
+#define ERR_NOSUCHCHANNEL(nickname, channel)							":" + SERVERNAME + " 403 " + nickname + " " + channel + " :No such channel"
+#define ERR_TOOMANYCHANNELS(nickname)									":" + SERVERNAME + " 405 " + nickname + " :You have joined too many channels"
+#define ERR_USERNOTINCHANNEL(nickname, channel)							":" + SERVERNAME + " 441 " + nickname + " " + channel + " :They aren't on that channel"
+#define ERR_CHANOPRIVSNEEDED(nickname, channel)							":" + SERVERNAME + " 482 " + nickname + " " + channel + " :You're not channel operator"
+#define ERR_CHANNELISFULL(nickname, channel)							":" + SERVERNAME + " 471 " + nickname + " " + channel + " :Cannot join channel (+l)"
+#define ERR_INVITEONLYCHAN(nickname, channel)							":" + SERVERNAME + " 473 " + nickname + " " + channel + " :Cannot join channel (+i)"
+#define ERR_BANNEDFROMCHAN(nickname, channel)							":" + SERVERNAME + " 474 " + nickname + " " + channel + " :Cannot join channel (+b)"
+#define ERR_BADCHANNELKEY(nickname, channel)							":" + SERVERNAME + " 475 " + nickname + " " + channel + " :Cannot join channel (+k)"
+#define ERR_BADCHANMASK(nickname, channel)								":" + SERVERNAME + " 476 " + nickname + " " + channel + " :Bad Channel Mask"
+#define ERR_BADCHANNELNAME(nickname, channel)							":" + SERVERNAME + " 479 " + nickname + " " + channel + " :Illegal channel name"
+#define RPL_NAMREPLY(nickname, channel, symbol, list)					":" + SERVERNAME + " 353 " + nickname + " " + symbol + " " + channel + " :" + list
+#define RPL_ENDOFNAMES(nickname, channel)								":" + SERVERNAME + " 366 " + nickname + " " + channel + " :End of /NAMES list"
+#define RPL_YOUREOPER(nickname)											":" + SERVERNAME + " 381 " + nickname + " :You are now an IRC operator"
+#define ERR_UNKNOWNMODE(nickname, mode)									":" + SERVERNAME + " 472 " + nickname + " " + mode + " :Is unknown mode char to me"
 
-//join
-#define RPL_JOIN(nickname, username, hostname, channel)				":" + nickname + "!~" + username + "@" + hostname + " JOIN " + channel
-#define RPL_JOINWELCOME(nickname, channel)							":" + SERVERNAME + " NOTICE " + nickname + " :Welcome to the channel :" + channel + "!"
+//join	
+#define RPL_JOIN(nickname, username, hostname, channel)					":" + nickname + "!~" + username + "@" + hostname + " JOIN " + channel
+#define RPL_JOINWELCOME(nickname, channel)								":" + SERVERNAME + " NOTICE " + nickname + " :Welcome to the channel :" + channel + "!"
 
-//part
-#define RPL_PART(nickname, username, hostname, channel, message)	":" + nickname + "!~" + username + "@" + hostname + " PART " + channel + " :" + message
+//part	
+#define RPL_PART(nickname, username, hostname, channel, message)		":" + nickname + "!~" + username + "@" + hostname + " PART " + channel + " :" + message
 
-//privmsg
-#define ERR_NOTEXTTOSEND(nickname)									":" + SERVERNAME + " 412 " + nickname + " :No text to send"
-#define ERR_NORECIPIENT(nickname, command)							":" + SERVERNAME + " 411 " + nickname + " " + command + " :No recipient given"
-#define ERR_TOOMANYTARGETS(nickname, message)						":" + SERVERNAME + " 407 " + nickname + " :" + message
-#define ERR_CANNOTSENDTOCHAN(nickname, channel)						":" + SERVERNAME + " 404 " + nickname + " " + channel + " :Cannot send to channel"
-#define RPL_PRIVMSG(source, target, message)						":" + source + " PRIVMSG " + target + " " + message
+//privmsg	
+#define ERR_NOTEXTTOSEND(nickname)										":" + SERVERNAME + " 412 " + nickname + " :No text to send"
+#define ERR_NORECIPIENT(nickname, command)								":" + SERVERNAME + " 411 " + nickname + " " + command + " :No recipient given"
+#define ERR_TOOMANYTARGETS(nickname, message)							":" + SERVERNAME + " 407 " + nickname + " :" + message
+#define ERR_CANNOTSENDTOCHAN(nickname, channel)							":" + SERVERNAME + " 404 " + nickname + " " + channel + " :Cannot send to channel"
+#define RPL_PRIVMSG(source, target, message)							":" + source + " PRIVMSG " + target + " " + message
 
-//invite
-#define ERR_USERONCHANNEL(nick, target, channel)					":" + SERVERNAME + " 443 " + nick + " " + target + " " + channel + " :is already on channel"
-#define ERR_NOTONCHANNEL(nick, channel)								":" + SERVERNAME + " 442 " + nick + " " + channel + " :You're not on that channel"
-#define RPL_INVITING(nick, target, channel)							":" + SERVERNAME + " 341 " + nick + " " + target + " " + channel
+//invite	
+#define ERR_USERONCHANNEL(nickname, target, channel)					":" + SERVERNAME + " 443 " + nickname + " " + target + " " + channel + " :is already on channel"
+#define ERR_NOTONCHANNEL(nickname, channel)								":" + SERVERNAME + " 442 " + nickname + " " + channel + " :You're not on that channel"
+#define RPL_INVITING(nickname, target, channel)							":" + SERVERNAME + " 341 " + nickname + " " + target + " " + channel
 
+//mode
+#define RPL_MODE(nickname, username, channel, hostname, mode, target)	":" + nickname + "!~" + username + "@" + hostname + " MODE " + channel + " " + mode + " " + target
 
 #define RPL_AVAILABLECMD(nickname) "\n"\
     ":" + SERVERNAME + " NOTICE " + nickname + " :Available commands:" + "\n" \

@@ -66,7 +66,7 @@ class Channel
     void displayChannelMessagePrivMsg(Client &sender, const std::string &message);
     void displayChannelMessageKick(Client &sender, const std::string &message, const std::string &target);
     void displayChannelMessageTopic(Client &sender, const std::string &message);
-	void displayChannelMessagePart(Client *client);
+	void displayChannelMessagePart(Client *client, Client *oldOp);
 
     // Invite
     void addInvite(const std::string &nickname);

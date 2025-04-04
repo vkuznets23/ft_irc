@@ -11,6 +11,7 @@
 /* **************************************************************************************** */
 
 #include "../inc/Channel.hpp"
+#include "../inc/Message.hpp"
 
 /******************************** CONSTRUCTORS ********************************/
 Channel::Channel() {};
@@ -213,7 +214,7 @@ void Channel::displayChannelMessageTopic(Client &sender, const std::string &mess
     }
 }
 
-void Channel::displayChannelMessagePart(Client *client)
+void Channel::displayChannelMessagePart(Client *client, Client *oldOp)
 {
 	std::string fullMsg = ":" + client->getNick() + " MODE " + _channelName + " +o " + client->getNick();
 
@@ -221,7 +222,7 @@ void Channel::displayChannelMessagePart(Client *client)
     {
         if (member != client)
         {
-            Server::sendToClient(*client, fullMsg);
+            Server::sendToClient(*client, RPL_MODE(oldOp->getNick(), oldOp->getUserName(), _channelName, oldOp->getHostName(), "+o", client->getNick()));
         }
     }
 }
