@@ -30,7 +30,7 @@ SRC = $(SRC_DIR)/main.cpp $(SRC_DIR)/Client.cpp $(SRC_DIR)/runServer.cpp $(SRC_D
 		$(CMD_DIR)/Pass.cpp $(CMD_DIR)/Nick.cpp $(CMD_DIR)/UserName.cpp $(CMD_DIR)/Quit.cpp\
 		$(CMD_DIR)/Join.cpp $(CMD_DIR)/Topic.cpp $(CMD_DIR)/Names.cpp $(CMD_DIR)/Part.cpp\
 		$(CMD_DIR)/Privmsg.cpp $(CMD_DIR)/Invite.cpp $(CMD_DIR)/Kick.cpp\
-		$(MODES_DIR)/Mode.cpp $(MODES_DIR)/ServerModes.cpp $(MODES_DIR)/ServerValidation.cpp
+		$(MODES_DIR)/ModesExecution.cpp $(MODES_DIR)/ModesHelperFunctions.cpp $(MODES_DIR)/ModesValidation.cpp
 
 OBJ = $(SRC:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 

@@ -118,6 +118,11 @@ bool Channel::isTopicRestricted() const
     return _topicOperatorsOnly;
 }
 
+void Channel::setTopicRestricted(bool status)
+{
+    _topicOperatorsOnly = status;
+}
+
 /******************************** OPERATORS ********************************/
 void Channel::setOperator(Client *client)
 {

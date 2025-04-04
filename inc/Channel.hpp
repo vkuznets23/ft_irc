@@ -6,7 +6,7 @@
 /*                                                         :+:     :+:+:+:+:  :+:           */
 /*  By: Viktoriia Kuznetsova<vkuznets@student.hive.fi>    :+:     :+:    :+: :+:            */
 /*      Juliette Mouette<jmouette@student.hive.fi>,      :+:     :+:    :+: :+:    :+:      */
-/*      									        ::::::::::: :::    :::  ::::::::        */
+/*      									                          ::::::::::: :::    :::  ::::::::        */
 /*                                                                                          */
 /* **************************************************************************************** */
 
@@ -87,6 +87,7 @@ class Channel
     void setTopic(const std::string &topic);
     std::string getTopic() const;
     bool isTopicRestricted() const;
+    void setTopicRestricted(bool status);
 
     // chanel modes
     std::string getMode() const;

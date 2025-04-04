@@ -1,6 +1,16 @@
-#include "../../inc/Message.hpp"
+/* **************************************************************************************** */
+/*                                                                                          */
+/*                                                        ::::::::::: :::::::::   ::::::::  */
+/*                                                           :+:     :+:    :+: :+:    :+:  */
+/*                                                          :+:     :+:    :+: :+:          */
+/*                                                         :+:     :+:+:+:+:  :+:           */
+/*  By: Viktoriia Kuznetsova<vkuznets@student.hive.fi>    :+:     :+:    :+: :+:            */
+/*      Juliette Mouette<jmouette@student.hive.fi>,      :+:     :+:    :+: :+:    :+:      */
+/*      									        ::::::::::: :::    :::  ::::::::        */
+/*                                                                                          */
+/* **************************************************************************************** */
+
 #include "../../inc/Server.hpp"
-#include <unordered_set>
 
 void Server::handlePlusModes(Channel *channel, char mode, const std::vector<std::string> &parameters, int &i,
                              std::string &setModes, std::string &setParameters)
@@ -31,6 +41,13 @@ void Server::handlePlusModes(Channel *channel, char mode, const std::vector<std:
         else
             setParameters += " " + parameters[i];
         i++;
+        break;
+    case 't':
+        if (!channel->isTopicRestricted())
+        {
+            channel->setTopicRestricted(true);
+            setModes += "+t";
+        }
         break;
     case 'o':
         Client *addOperator = getClientByNickname(parameters[i]);
@@ -76,6 +93,13 @@ void Server::handleMinusModes(Channel *channel, char mode, const std::vector<std
             setModes += "-l";
         }
         break;
+    case 't':
+        if (channel->isTopicRestricted())
+        {
+            channel->setTopicRestricted(false);
+            setModes += "-t";
+        }
+        break;
     case 'o':
         Client *removeOperator = getClientByNickname(parameters[i]);
         if (channel->isOperator(removeOperator))
@@ -116,40 +140,4 @@ std::string Server::compressModes(const std::string &setModes)
     if (!currentGroup.empty())
         result += currentSign + currentGroup;
     return (result);
-}
-
-void Server::executeModes(Client &client, Channel *channel)
-{
-    std::string response;
-    std::string setModes;
-    std::string setParameters;
-    int i = 0;
-    char currentSign;
-
-    std::vector<std::string> parameters = channel->getParsedParameters();
-    std::string modes = channel->getParsedModes();
-
-    for (char c : modes)
-    {
-        if (c == '+' || c == '-')
-            currentSign = c;
-        else
-        {
-            if (currentSign == '+')
-                handlePlusModes(channel, c, parameters, i, setModes, setParameters);
-            else if (currentSign == '-')
-                handleMinusModes(channel, c, parameters, i, setModes, setParameters);
-        }
-    }
-
-    setModes = compressModes(setModes);
-    response = ":" + client.getNick() + "!~" + client.getUserName() + "@" + client.getHostName() + " MODE " +
-               channel->getChannelName() + " " + setModes;
-
-    if (!setParameters.empty())
-        response += " " + setParameters;
-
-    // i sen msg to everyone in the chat
-    for (Client *member : channel->getUsers())
-        sendToClient(*member, response);
 }

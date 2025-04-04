@@ -1,8 +1,21 @@
-#include "../../inc/Server.hpp"
+/* **************************************************************************************** */
+/*                                                                                          */
+/*                                                        ::::::::::: :::::::::   ::::::::  */
+/*                                                           :+:     :+:    :+: :+:    :+:  */
+/*                                                          :+:     :+:    :+: :+:          */
+/*                                                         :+:     :+:+:+:+:  :+:           */
+/*  By: Viktoriia Kuznetsova<vkuznets@student.hive.fi>    :+:     :+:    :+: :+:            */
+/*      Juliette Mouette<jmouette@student.hive.fi>,      :+:     :+:    :+: :+:    :+:      */
+/*      									        ::::::::::: :::    :::  ::::::::        */
+/*                                                                                          */
+/* **************************************************************************************** */
+
 #include "../../inc/Message.hpp"
+#include "../../inc/Server.hpp"
 #include <unordered_set>
 
-bool Server::checkValidParameter(int index, std::vector<std::string> parameter, char mode, Channel *channel, Client &client)
+bool Server::checkValidParameter(int index, std::vector<std::string> parameter, char mode, Channel *channel,
+                                 Client &client)
 {
     std::string resp;
 
