@@ -99,7 +99,10 @@ int Channel::getUserCount() const
     return _userList.size();
 }
 
-std::vector<Client *> &Channel::getUsers() { return (_userList); }
+std::vector<Client *> &Channel::getUsers()
+{
+    return (_userList);
+}
 
 /******************************** TOPIC METHODS (OPERATOR) ********************************/
 std::string Channel::getTopic() const
@@ -192,20 +195,22 @@ void Channel::displayChannelMessageKick(Client &sender, const std::string &messa
 
 void Channel::displayChannelMessageTopic(Client &sender, const std::string &message)
 {
-	std::string cleanedMessage = message;
+    std::string cleanedMessage = message;
 
-	cleanedMessage.erase(std::find_if(cleanedMessage.rbegin(), cleanedMessage.rend(), 
-					[](unsigned char ch) { return !std::isspace(ch); }).base(), cleanedMessage.end());
+    cleanedMessage.erase(
+        std::find_if(cleanedMessage.rbegin(), cleanedMessage.rend(), [](unsigned char ch) { return !std::isspace(ch); })
+            .base(),
+        cleanedMessage.end());
 
-	std::string fullMsg = ":" + sender.getNick() + " TOPIC " + _channelName + " " + cleanedMessage;
+    std::string fullMsg = ":" + sender.getNick() + " TOPIC " + _channelName + " " + cleanedMessage;
 
-	for (Client *client : _userList)
-	{
-		if (client != &sender)
-		{
-			Server::sendToClient(*client, fullMsg);
-		}
-	}
+    for (Client *client : _userList)
+    {
+        if (client != &sender)
+        {
+            Server::sendToClient(*client, fullMsg);
+        }
+    }
 }
 
 /******************************** INVITE ********************************/
@@ -236,24 +241,40 @@ void Channel::removeInvite(const std::string &nickname)
 // USAGE: [/mode #channel +t ] [/mode #channel -t]
 // OR [/mode #channel +i +k mypassword +l 50]
 /******************************** INVITE ONLY ********************************/
+// returns like this: +ik secretpassword
 std::string Channel::getMode() const
 {
     std::string activeModes;
+    std::string parameters;
 
     if (_isInviteOnly)
-        activeModes += " +i";
+        activeModes += "i";
 
     if (!_channelPassword.empty())
-        activeModes += " +k " + _channelPassword;
+    {
+
+        activeModes += "k" + _channelPassword;
+        if (parameters.empty())
+            parameters = _channelPassword;
+        else
+            parameters += " " + _channelPassword;
+    }
 
     if (_userLimit != -1)
-        activeModes += " +l " + std::to_string(_userLimit);
+    {
+        activeModes += "l" + std::to_string(_userLimit);
+        if (parameters.empty())
+            parameters = std::to_string(_userLimit);
+        else
+            parameters += " " + std::to_string(_userLimit);
+    }
 
     if (_topicOperatorsOnly)
-        activeModes += " +t";
+        activeModes += "t";
 
-    if (!activeModes.empty() && activeModes[0] == ' ')
-        activeModes = activeModes.substr(1);
+    activeModes.insert(0, 1, '+');
+    if (!parameters.empty())
+        activeModes += " " + parameters;
 
     return activeModes;
 }

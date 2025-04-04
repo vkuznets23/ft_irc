@@ -63,6 +63,7 @@ void Server::processModeCommand(Client &client, const std::string &channelName, 
 
     if (modeMessage.empty())
     {
+        std::cout << "Sending current modes because modeMessage is empty" << std::endl;
         Server::sendCurrentModes(client, getChannelByChannelName(channelName));
         return;
     }
