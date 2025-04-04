@@ -12,9 +12,11 @@
 
 #include "../inc/Server.hpp"
 
-Server::Server() {}
+/******************************** CONSTRUCTORS ********************************/
 
-Server::Server(int port, std::string password) : _port(port), _password(password) {}
+Server::Server() {};
+
+Server::Server(int port, std::string password) : _port(port), _password(password) {};
 
 Server::Server(const Server &o)
 {
@@ -32,4 +34,34 @@ Server &Server::operator=(const Server &o)
     return *this;
 }
 
-Server::~Server() {}
+Server::~Server() {};
+
+/******************************** GETTERS NICKNAME/CHANNELNAME ********************************/
+
+Client *Server::getClientByNickname(const std::string &nickname)
+{
+    auto it = std::find_if(_clients.begin(), _clients.end(),
+                           [&nickname](Client *client) { return client->getNick() == nickname; });
+
+    return (it != _clients.end()) ? *it : nullptr;
+}
+
+Channel *Server::getChannelByChannelName(const std::string &channelName)
+{
+    auto it = _channels.find(channelName);
+
+    if (it != _channels.end())
+        return &it->second;
+    return nullptr;
+}
+
+/******************************** REST ********************************/
+
+bool Server::userIsMemberOfChannel(Client &client, const std::string &channelName)
+{
+    Channel *channel = getChannelByChannelName(channelName);
+    if (!channel)
+        return false;
+
+    return channel->isClientInChannel(&client);
+}

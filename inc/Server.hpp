@@ -6,7 +6,7 @@
 /*                                                         :+:     :+:+:+:+:  :+:           */
 /*  By: Viktoriia Kuznetsova<vkuznets@student.hive.fi>    :+:     :+:    :+: :+:            */
 /*      Juliette Mouette<jmouette@student.hive.fi>,      :+:     :+:    :+: :+:    :+:      */
-/*      									        ::::::::::: :::    :::  ::::::::        */
+/*      									                          ::::::::::: :::    :::  ::::::::        */
 /*                                                                                          */
 /* **************************************************************************************** */
 
@@ -94,9 +94,11 @@ class Server
     void executeModes(Client &client, Channel *channel);
     std::string compressModes(const std::string &setModes);
     void handleNamesCommand(Client &client, const std::string &channelName);
-    void handleMode(char sign, char mode, Channel *channel, const std::vector<std::string> &parameters, int &i,
-                    std::string &setModes, std::string &setParameters);
-    void processModeCommand(Client &client, const std::string &channelName, const std::string &modeMessage); // NEW
+    void processModeCommand(Client &client, const std::string &channelName, const std::string &modeMessage);
+    void handlePlusModes(Channel *channel, char mode, const std::vector<std::string> &parameters, int &i,
+                         std::string &setModes, std::string &setParameters); // NEW
+    void handleMinusModes(Channel *channel, char mode, const std::vector<std::string> &parameters, int &i,
+                          std::string &setModes, std::string &setParameters);
 };
 
 std::string trim(const std::string &str);
