@@ -60,7 +60,7 @@ class Channel
     void setOperator(Client *client);
     void unsetOperator(Client *client);
     bool isOperator(Client *client) const;
-	size_t countOperators() const;
+    size_t countOperators() const;
 
     // Display message to all clients in the channel
     void displayChannelMessagePrivMsg(Client &sender, const std::string &message);
@@ -96,30 +96,10 @@ class Channel
     void setInviteOnly();
     void unsetInviteOnly();
 
-    void clearParsedParameters()
-    {
-        _parsedParameters.clear();
-    }
-    std::vector<std::string> getParsedParameters()
-    {
-        return (_parsedParameters);
-    }
-    void setParsedParameters(std::vector<std::string> parameters)
-    {
-        _parsedParameters = parameters;
-    }
-    void setParsedModes(std::string modes)
-    {
-        _parsedModes = modes;
-    }
-    std::string getParsedModes()
-    {
-        return (_parsedModes);
-    }
-
-    // DELETE/DEBUG
-    std::vector<Client *> getOperatorList() const
-    {
-        return _operatorList; // Returns the list of operators
-    }
+    // modes parsing
+    void clearParsedParameters();
+    std::vector<std::string> getParsedParameters();
+    void setParsedParameters(std::vector<std::string> parameters);
+    void setParsedModes(std::string modes);
+    std::string getParsedModes();
 };

@@ -2,26 +2,6 @@
 #include "../../inc/Server.hpp"
 #include <unordered_set>
 
-void printOperatorList(Channel *channel) // DELETE DEGUG
-{
-    // Access the operator list via the public method
-    const std::vector<Client *> &operatorList = channel->getOperatorList();
-
-    if (operatorList.empty())
-    {
-        std::cout << "No operators set for channel " << channel->getChannelName() << std::endl;
-        return;
-    }
-
-    std::cout << "Operator list for channel " << channel->getChannelName() << ":" << std::endl;
-
-    // Range-based for loop to iterate over the operator list
-    for (Client *operatorClient : operatorList)
-    {
-        std::cout << "- " << operatorClient->getNick() << std::endl;
-    }
-}
-
 void Server::handlePlusModes(Channel *channel, char mode, const std::vector<std::string> &parameters, int &i,
                              std::string &setModes, std::string &setParameters)
 {
@@ -35,9 +15,17 @@ void Server::handlePlusModes(Channel *channel, char mode, const std::vector<std:
         }
         break;
     case 'k':
-        // USAGE: /MODE #channel_name +k password
         channel->setChannelPassword(parameters[i]);
         setModes += "+k";
+        if (setParameters.empty())
+            setParameters += parameters[i];
+        else
+            setParameters += " " + parameters[i];
+        i++;
+        break;
+    case 'l':
+        channel->setUserLimit(std::stoi(parameters[i]));
+        setModes += "+l";
         if (setParameters.empty())
             setParameters += parameters[i];
         else
@@ -80,6 +68,13 @@ void Server::handleMinusModes(Channel *channel, char mode, const std::vector<std
         else
             setParameters += " " + parameters[i];
         i++;
+        break;
+    case 'l':
+        if (channel->getUserLimit() != -1)
+        {
+            channel->setUserLimit(-1);
+            setModes += "-l";
+        }
         break;
     case 'o':
         Client *removeOperator = getClientByNickname(parameters[i]);
@@ -137,9 +132,7 @@ void Server::executeModes(Client &client, Channel *channel)
     for (char c : modes)
     {
         if (c == '+' || c == '-')
-        {
             currentSign = c;
-        }
         else
         {
             if (currentSign == '+')

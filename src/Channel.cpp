@@ -121,16 +121,16 @@ bool Channel::isTopicRestricted() const
 /******************************** OPERATORS ********************************/
 void Channel::setOperator(Client *client)
 {
-	auto it = std::find(_operatorList.begin(), _operatorList.end(), client);
-	if (it == _operatorList.end())
-		_operatorList.push_back(client);
+    auto it = std::find(_operatorList.begin(), _operatorList.end(), client);
+    if (it == _operatorList.end())
+        _operatorList.push_back(client);
 }
 
 void Channel::unsetOperator(Client *client)
 {
-	auto it = std::find(_operatorList.begin(), _operatorList.end(), client);
-	if (it == _operatorList.end())
-		_operatorList.erase(it);
+    auto it = std::find(_operatorList.begin(), _operatorList.end(), client);
+    if (it == _operatorList.end())
+        _operatorList.erase(it);
 }
 bool Channel::isOperator(Client *client) const
 {
@@ -229,55 +229,7 @@ void Channel::removeInvite(const std::string &nickname)
     _invitedUsers.erase(nickname);
 }
 
-// i - invite only
-// k - Password Protected
-// l - user limit
-// t - Topic Operators Only
-// o - Give/take channel operator privilege
-
-// USAGE: [/mode #channel +i ] [/mode #channel -i]
-// USAGE: [/mode #channel +k (mypassword)] [/mode #channel -k]
-// USAGE: [/mode #channel +l (limit)] [/mode #channel -l]
-// USAGE: [/mode #channel +t ] [/mode #channel -t]
-// OR [/mode #channel +i +k mypassword +l 50]
 /******************************** INVITE ONLY ********************************/
-// returns like this: +ik secretpassword
-std::string Channel::getMode() const
-{
-    std::string activeModes;
-    std::string parameters;
-
-    if (_isInviteOnly)
-        activeModes += "i";
-
-    if (!_channelPassword.empty())
-    {
-
-        activeModes += "k" + _channelPassword;
-        if (parameters.empty())
-            parameters = _channelPassword;
-        else
-            parameters += " " + _channelPassword;
-    }
-
-    if (_userLimit != -1)
-    {
-        activeModes += "l" + std::to_string(_userLimit);
-        if (parameters.empty())
-            parameters = std::to_string(_userLimit);
-        else
-            parameters += " " + std::to_string(_userLimit);
-    }
-
-    if (_topicOperatorsOnly)
-        activeModes += "t";
-
-    activeModes.insert(0, 1, '+');
-    if (!parameters.empty())
-        activeModes += " " + parameters;
-
-    return activeModes;
-}
 
 bool Channel::getInviteOnlyState()
 {
@@ -290,4 +242,26 @@ void Channel::setInviteOnly()
 void Channel::unsetInviteOnly()
 {
     _isInviteOnly = false;
+}
+
+/******************************** MODES PARSING ********************************/
+void Channel::clearParsedParameters()
+{
+    _parsedParameters.clear();
+}
+std::vector<std::string> Channel::getParsedParameters()
+{
+    return (_parsedParameters);
+}
+void Channel::setParsedParameters(std::vector<std::string> parameters)
+{
+    _parsedParameters = parameters;
+}
+void Channel::setParsedModes(std::string modes)
+{
+    _parsedModes = modes;
+}
+std::string Channel::getParsedModes()
+{
+    return (_parsedModes);
 }
