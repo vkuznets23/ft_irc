@@ -150,7 +150,6 @@ void Server::handleCommands(Client &client, const std::string &message)
              iss >> channelName;
              std::getline(iss, modeMessage);
 
-             std::cout << modeMessage << std::endl;
              modeMessage = trim(modeMessage); // DO I NEED THIS?
 
              processModeCommand(c, channelName, modeMessage);

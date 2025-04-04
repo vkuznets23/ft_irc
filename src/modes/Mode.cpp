@@ -29,19 +29,6 @@ Channel *Server::getChannelByChannelName(const std::string &channelName)
     return nullptr;
 }
 
-void Server::sendCurrentModes(Client &client, Channel *channel)
-{
-    // Get the active modes for the channel using the getMode() function
-    std::string modes = channel->getMode();
-
-    if (modes.empty())
-        modes = "No modes set";
-
-    std::string response =
-        ":ircserv(current mode) " + client.getNick() + " MODE " + channel->getChannelName() + " " + modes;
-    sendToClient(client, response);
-}
-
 void Server::processModeCommand(Client &client, const std::string &channelName, const std::string &modeMessage)
 {
     // to prevent entering MODE functions for "Received message: MODE vkuznets +i"
@@ -58,13 +45,6 @@ void Server::processModeCommand(Client &client, const std::string &channelName, 
     if (!channel->isOperator(&client))
     {
         sendToClient(client, ERR_CHANOPRIVSNEEDED(client.getNick(), channelName));
-        return;
-    }
-
-    if (modeMessage.empty())
-    {
-        std::cout << "Sending current modes because modeMessage is empty" << std::endl;
-        Server::sendCurrentModes(client, getChannelByChannelName(channelName));
         return;
     }
 
