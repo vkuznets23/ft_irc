@@ -33,7 +33,6 @@ void Server::handleMode(char sign, char mode, Channel *channel, const std::vecto
         {
             if (!channel->getInviteOnlyState())
             {
-                std::cout << "DEBUG: +i mode" << std::endl;
                 channel->setInviteOnly();
                 setModes += "+i";
             }
@@ -42,7 +41,6 @@ void Server::handleMode(char sign, char mode, Channel *channel, const std::vecto
         {
             if (channel->getInviteOnlyState())
             {
-                std::cout << "DEBUG: -i mode" << std::endl;
                 channel->unsetInviteOnly();
                 setModes += "-i";
             }
@@ -52,7 +50,6 @@ void Server::handleMode(char sign, char mode, Channel *channel, const std::vecto
         // USAGE: /MODE #channel_name +k password
         if (sign == '+')
         {
-            std::cout << "DEBUG: +k mode" << std::endl;
             channel->setChannelPassword(parameters[i]);
             setModes += "+k";
             if (setParameters.empty())
@@ -79,10 +76,10 @@ void Server::handleMode(char sign, char mode, Channel *channel, const std::vecto
             if (!channel->isOperator(addOperator))
             {
                 channel->setOperator(addOperator);
-                printOperatorList(channel);
-                if (channel->isOperator(addOperator))
-                    std::cout << "operator" << std::endl;
+
+                // Not sure if i need this
                 sendToClient(*addOperator, RPL_YOUREOPER(addOperator->getNick(), channel->getChannelName()));
+                
                 if (setModes.find("+o") == std::string::npos)
                     setModes += "+o";
             }
@@ -102,7 +99,6 @@ void Server::handleMode(char sign, char mode, Channel *channel, const std::vecto
             if (channel->isOperator(removeOperator))
             {
                 channel->unsetOperator(removeOperator);
-                printOperatorList(channel);
                 setModes += "-o";
             }
             else
@@ -170,7 +166,8 @@ void Server::executeModes(Client &client, Channel *channel)
     }
 
     setModes = compressModes(setModes);
-    response = ":ircserv(execut) " + client.getNick() + " " + "MODE" + " " + channel->getChannelName() + " " + setModes;
+    response = ":" + client.getNick() + "!~" + client.getUserName() + "@" + client.getHostName() + " MODE " +
+               channel->getChannelName() + " " + setModes;
 
     if (!setParameters.empty())
         response += " " + setParameters;

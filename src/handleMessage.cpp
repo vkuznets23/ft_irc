@@ -151,9 +151,7 @@ void Server::handleCommands(Client &client, const std::string &message)
              std::getline(iss, modeMessage);
 
              std::cout << modeMessage << std::endl;
-             modeMessage = trim(modeMessage);
-             std::cout << "DEBUG: Received MODE command - Channel: " << channelName << ", Mode Message: " << modeMessage
-                       << std::endl;
+             modeMessage = trim(modeMessage); // DO I NEED THIS?
 
              processModeCommand(c, channelName, modeMessage);
          }},
