@@ -59,5 +59,6 @@ void Server::Kick(Client &client, const std::string &channelName, const std::str
 	channel->displayChannelMessageKick(client, cleanedReason, target);
 	sendToClient(client, RPL_KICK(client.getNick(), client.getUserName(), client.getHostName(), channelName, target, cleanedReason));
 	sendToClient(*targetClient, RPL_KICK(client.getNick(), client.getUserName(), client.getHostName(), channelName, target, cleanedReason));
+	
 	channel->removeClient(targetClient);
 }

@@ -42,7 +42,6 @@ void Server::Topic(Client &client, const std::string &channelName, const std::st
 			sendToClient(client, RPL_NOTOPIC(client.getNick(), channelName));
 		else
 		{
-			std::cout << "C'EST LE TOPIC :'" << channel.getTopic() << "'" << std::endl;
 			sendToClient(client, RPL_TOPIC(client.getNick(), channelName, channel.getTopic()));
 		}
 		return;
@@ -70,9 +69,7 @@ void Server::Topic(Client &client, const std::string &channelName, const std::st
 	{
 		channel.unsetTopic();
 		channel.displayChannelMessageTopic(client, cleanedTopic);
-		std::cout << "AVANT SEND" << std::endl;
 		sendToClient(client, RPL_NOTOPIC(client.getNick(), channelName));
-		std::cout << "APRES SEND" << std::endl;
 	}
 	else
 	{
