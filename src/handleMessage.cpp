@@ -63,129 +63,137 @@ void Server::handleCommands(Client &client, const std::string &message)
     std::istringstream iss(message);
     iss >> arg[0];
 
-    std::map<std::string, std::function<void(Client &, std::istringstream &)>> registeredCommands = {
-        {"PING",
-         [](Client &c, std::istringstream &iss) {
-             std::string arg1;
-             iss >> arg1;
-             if (arg1.empty())
-             {
-                 sendToClient(c, ERR_NEEDMOREPARAMS(c.getNick(), "PING"));
-                 return;
-             }
-             sendToClient(c, "PONG " + arg1);
-         }},
-        {"NICK",
-         [this](Client &c, std::istringstream &iss) {
-             std::string arg1;
-             iss >> arg1;
-             if (arg1.empty())
-             {
-                 sendToClient(c, ERR_NEEDMOREPARAMS(c.getNick(), "NICK"));
-                 return;
-             }
-             Nick(c, arg1);
-         }},
-        {"JOIN",
-         [this](Client &c, std::istringstream &iss) {
-             std::string channelName, password;
-             iss >> channelName >> password;
-             if (channelName.empty())
-             {
-                 sendToClient(c, ERR_NEEDMOREPARAMS(c.getNick(), "JOIN"));
-                 return;
-             }
-             Join(c, channelName, password);
-         }},
-        {"TOPIC",
-         [this](Client &c, std::istringstream &iss) {
-             std::string channelName, newTopic;
-             iss >> channelName;
-             std::getline(iss, newTopic);
-             if (channelName.empty())
-             {
-                 sendToClient(c, ERR_NEEDMOREPARAMS(c.getNick(), "TOPIC"));
-                 return;
-             }
-             Topic(c, channelName, newTopic);
-         }},
-        {"PART",
-         [this, &message](Client &c, std::istringstream &iss) {
-             std::string arg1;
-             iss >> arg1;
-             if (arg1.empty())
-             {
-                 sendToClient(c, ERR_NEEDMOREPARAMS(c.getNick(), "PART"));
-                 return;
-             }
-             Part(c, arg1, message);
-         }},
-        {"PRIVMSG",
-         [this](Client &c, std::istringstream &iss) {
-             std::string nickname, msg;
-             iss >> nickname;
-             std::getline(iss, msg);
-             if (nickname.empty() || msg.empty())
-             {
-                 sendToClient(c, ERR_NEEDMOREPARAMS(c.getNick(), "PRIVMSG"));
-                 return;
-             }
-             Privmsg(c, nickname, msg);
-         }},
-        {"INVITE",
-         [this](Client &c, std::istringstream &iss) {
-             std::string target, channelName;
-             iss >> target;
-             std::getline(iss, channelName);
-             if (target.empty() || channelName.empty())
-             {
-                 sendToClient(c, ERR_NEEDMOREPARAMS(c.getNick(), "INVITE"));
-                 return;
-             }
-             Invite(c, target, channelName);
-         }},
-        {"MODE",
-         [this](Client &c, std::istringstream &iss) {
-             std::string channelName, modeMessage;
-             iss >> channelName;
-             std::getline(iss, modeMessage);
-
-             //  modeMessage = trim(modeMessage); // DO I NEED THIS?
-
-             processModeCommand(c, channelName, modeMessage);
-         }},
-        {"NAMES",
-         [this](Client &c, std::istringstream &iss) {
-             std::string channelName;
-             iss >> channelName;
-             if (channelName.empty())
-             {
-                 sendToClient(c, ERR_NEEDMOREPARAMS(c.getNick(), "NAMES"));
-                 return;
-             }
-             handleNamesCommand(c, channelName);
-         }},
-        {"KICK",
-         [this](Client &c, std::istringstream &iss) {
-             std::string channelName, target, reason;
-             iss >> channelName >> target;
-             std::getline(iss, reason);
-             if (channelName.empty() || target.empty())
-             {
-                 sendToClient(c, ERR_NEEDMOREPARAMS(c.getNick(), "KICK"));
-                 return;
-             }
-             Kick(c, channelName, target, reason);
-         }},
-        {"QUIT", [this, &message](Client &c, std::istringstream &iss) {
-             (void)iss;
-             if (message.empty())
-             {
-                 sendToClient(c, ERR_NEEDMOREPARAMS(c.getNick(), "QUIT"));
-                 return;
-             }
-             Quit(c, message);
-         }}};
+	std::map<std::string, std::function<void(Client &, std::istringstream &)>> registeredCommands =
+	{
+		{"PING", [](Client &c, std::istringstream &iss)
+		{
+			std::string arg1;
+			iss >> arg1;
+			if (arg1.empty())
+			{
+				sendToClient(c, ERR_NEEDMOREPARAMS(c.getNick(), "PING"));
+				return;
+			}
+			sendToClient(c, "PONG " + arg1);
+		}},
+		{"NICK", [this](Client &c, std::istringstream &iss)
+		{
+			std::string arg1;
+			iss >> arg1;
+			if (arg1.empty())
+			{
+				sendToClient(c, ERR_NEEDMOREPARAMS(c.getNick(), "NICK"));
+				return;
+			}
+			Nick(c, arg1);
+		}},
+		{"JOIN", [this](Client &c, std::istringstream &iss)
+		{
+			std::string channelName, password;
+			iss >> channelName >> password;
+			if (channelName.empty())
+			{
+				sendToClient(c, ERR_NEEDMOREPARAMS(c.getNick(), "JOIN"));
+				return;
+			}
+			Join(c, channelName, password);
+		}},
+		{"TOPIC", [this](Client &c, std::istringstream &iss)
+		{
+			std::string channelName, newTopic;
+			iss >> channelName;
+			std::getline(iss, newTopic);
+			if (channelName.empty())
+			{
+				sendToClient(c, ERR_NEEDMOREPARAMS(c.getNick(), "TOPIC"));
+				return;
+			}
+			Topic(c, channelName, newTopic);
+		}},
+		{"PART", [this, &message](Client &c, std::istringstream &iss)
+		{
+			std::string arg1;
+			iss >> arg1;
+			if (arg1.empty())
+			{
+				sendToClient(c, ERR_NEEDMOREPARAMS(c.getNick(), "PART"));
+				return;
+			}
+			Part(c, arg1, message);
+		}},
+		{"PRIVMSG", [this](Client &c, std::istringstream &iss)
+		{
+			std::string nickname, msg;
+			iss >> nickname;
+			std::getline(iss, msg);
+			if (nickname.empty() || msg.empty())
+			{
+				sendToClient(c, ERR_NEEDMOREPARAMS(c.getNick(), "PRIVMSG"));
+				return;
+			}
+			Privmsg(c, nickname, msg);
+		}},
+		{"INVITE", [this](Client &c, std::istringstream &iss)
+		{
+			std::string target, channelName;
+			iss >> target;
+			std::getline(iss, channelName);
+			if (target.empty() || channelName.empty())
+			{
+				sendToClient(c, ERR_NEEDMOREPARAMS(c.getNick(), "INVITE"));
+				return;
+			}
+			Invite(c, target, channelName);
+		}},
+		{"MODE", [this](Client &c, std::istringstream &iss)
+		{
+			std::string channelName, modeMessage;
+			iss >> channelName;
+			std::getline(iss, modeMessage);
+			processModeCommand(c, channelName, modeMessage);
+		}},
+		{"NAMES", [this](Client &c, std::istringstream &iss)
+		{
+			std::string channelName;
+			iss >> channelName;
+			if (channelName.empty())
+			{
+				sendToClient(c, ERR_NEEDMOREPARAMS(c.getNick(), "NAMES"));
+				return;
+			}
+			handleNamesCommand(c, channelName);
+		}},
+		{"KICK", [this](Client &c, std::istringstream &iss)
+		{
+			std::string channelName, target, reason;
+			iss >> channelName >> target;
+			std::getline(iss, reason);
+			if (channelName.empty() || target.empty())
+			{
+				sendToClient(c, ERR_NEEDMOREPARAMS(c.getNick(), "KICK"));
+				return;
+			}
+			Kick(c, channelName, target, reason);
+		}},
+		{"QUIT", [this, &message](Client &c, std::istringstream &iss)
+		{
+			(void)iss;
+			if (message.empty())
+			{
+				sendToClient(c, ERR_NEEDMOREPARAMS(c.getNick(), "QUIT"));
+				return;
+			}
+			Quit(c, message);
+		}},
+		{"CAP", [](Client &c, std::istringstream &iss)
+		{
+			(void) c;
+			std::string subcommand;
+			iss >> subcommand;
+			if (subcommand == "LS")
+				return;
+		}}
+	};
 
     auto it = registeredCommands.find(arg[0]);
     if (it != registeredCommands.end())

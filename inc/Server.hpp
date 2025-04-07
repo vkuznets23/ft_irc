@@ -74,13 +74,13 @@ class Server
                           const std::string &password);
     void Join(Client &client, std::string &channels, std::string &password);
     void Topic(Client &client, const std::string &channelName, const std::string &newTopic);
-    void Part(Client &client, const std::string &channelName, std::string message);
+    void Part(Client &client, const std::string &channels, const std::string &message);
     bool checkBasicErrors(Client &client, const std::string &msgtarget, const std::string &message);
     std::vector<std::string> parseTargets(const std::string &msgtarget, Client &client);
     Client *findClient(const std::string &nick);
     void Privmsg(Client &client, const std::string &msgtarget, const std::string &message);
     void Invite(Client &client, const std::string &nickname, const std::string &channelName);
-    void Kick(Client &client, const std::string &channelName, const std::string &target, const std::string &reason);
+    void Kick(Client &client, const std::string &channelName, const std::string &target, std::string &reason);
 
     // clean up
     void cleanupResources(int server_fd);

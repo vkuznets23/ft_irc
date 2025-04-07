@@ -120,6 +120,11 @@ void Channel::setTopic(const std::string &topic)
 {
     _topic = topic;
 }
+
+void Channel::unsetTopic()
+{
+    _topic.clear();
+}
 bool Channel::isTopicRestricted() const
 {
     return _topicOperatorsOnly;
@@ -189,41 +194,41 @@ void Channel::displayChannelMessagePrivMsg(Client &sender, const std::string &me
 
 void Channel::displayChannelMessageKick(Client &sender, const std::string &message, const std::string &target)
 {
-    std::string cleanedMessage = message;
-    cleanedMessage.erase(
-        std::find_if(cleanedMessage.rbegin(), cleanedMessage.rend(), [](unsigned char ch) { return !std::isspace(ch); })
-            .base(),
-        cleanedMessage.end());
+	std::string cleanedMessage = message;
+	cleanedMessage.erase(
+		std::find_if(cleanedMessage.rbegin(), cleanedMessage.rend(), [](unsigned char ch) { return !std::isspace(ch); })
+			.base(),
+		cleanedMessage.end());
 
-    std::string fullMsg = ":" + sender.getNick() + " KICK " + _channelName + " " + target + " " + cleanedMessage;
+	std::string fullMsg = ":" + sender.getNick() + " KICK " + _channelName + " " + target + " " + cleanedMessage;
 
-    for (Client *client : _userList)
-    {
-        if (client != &sender)
-        {
-            Server::sendToClient(*client, fullMsg);
-        }
-    }
+	for (Client *client : _userList)
+	{
+		if (client != &sender && client->getNick() != target)
+		{
+			Server::sendToClient(*client, fullMsg);
+		}
+	}
 }
 
 void Channel::displayChannelMessageTopic(Client &sender, const std::string &message)
 {
-    std::string cleanedMessage = message;
+	std::string cleanedMessage = message;
 
-    cleanedMessage.erase(
-        std::find_if(cleanedMessage.rbegin(), cleanedMessage.rend(), [](unsigned char ch) { return !std::isspace(ch); })
-            .base(),
-        cleanedMessage.end());
+	cleanedMessage.erase(
+		std::find_if(cleanedMessage.rbegin(), cleanedMessage.rend(), [](unsigned char ch) { return !std::isspace(ch); })
+			.base(),
+		cleanedMessage.end());
 
-    std::string fullMsg = ":" + sender.getNick() + " TOPIC " + _channelName + " " + cleanedMessage;
+	std::string fullMsg = ":" + sender.getNick() + " TOPIC " + _channelName + " " + cleanedMessage;
 
-    for (Client *client : _userList)
-    {
-        if (client != &sender)
-        {
-            Server::sendToClient(*client, fullMsg);
-        }
-    }
+	for (Client *client : _userList)
+	{
+		if (client != &sender)
+		{
+			Server::sendToClient(*client, fullMsg);
+		}
+	}
 }
 
 void Channel::displayChannelMessagePart(Client *client, Client *oldOp)

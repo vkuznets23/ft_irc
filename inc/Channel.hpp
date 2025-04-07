@@ -87,6 +87,7 @@ class Channel
     // topic
     void setTopic(const std::string &topic);
     std::string getTopic() const;
+	void unsetTopic();
     bool isTopicRestricted() const;
     void setTopicRestricted(bool status);
 

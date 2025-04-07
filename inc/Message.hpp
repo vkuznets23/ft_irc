@@ -41,9 +41,8 @@ const std::string SERVERNAME = "ircserv";
 #define RPL_QUIT(nickname, username, hostname, message)					":" + nickname + "!~" + username + "@" + hostname + " QUIT :" + message
 
 //topic	
-#define RPL_NOTOPIC(channel)											":" + SERVERNAME + " NOTICE " + channel + " :No topic is set"
+#define RPL_NOTOPIC(nickname, channel)									":" + SERVERNAME + " 331 " + nickname + " " + channel + " :No topic is set"
 #define RPL_TOPIC(nickname, channel, topic)								":" + SERVERNAME + " 332 " + nickname + " " + channel + " :" + topic 
-#define RPL_NEWTOPIC(channel, topic)									":" + SERVERNAME + " NOTICE Topic for " + channel + " changed to :" + topic 
 
 //channel	
 #define ERR_NOSUCHCHANNEL(nickname, channel)							":" + SERVERNAME + " 403 " + nickname + " " + channel + " :No such channel"
@@ -68,6 +67,9 @@ const std::string SERVERNAME = "ircserv";
 //part	
 #define RPL_PART(nickname, username, hostname, channel, message)		":" + nickname + "!~" + username + "@" + hostname + " PART " + channel + " :" + message
 
+//kick
+#define RPL_KICK(nickname, username, hostname, channel, target, reason)	":" + nickname + "!~" + username + "@" + hostname + " KICK " + channel + " " + target + " :" + reason
+
 //privmsg	
 #define ERR_NOTEXTTOSEND(nickname)										":" + SERVERNAME + " 412 " + nickname + " :No text to send"
 #define ERR_NORECIPIENT(nickname, command)								":" + SERVERNAME + " 411 " + nickname + " " + command + " :No recipient given"
@@ -91,8 +93,9 @@ const std::string SERVERNAME = "ircserv";
     ":" + SERVERNAME + " NOTICE " + nickname + " :  MSG      - Send a message to a user or channel" + "\n" \
     ":" + SERVERNAME + " NOTICE " + nickname + " :  MODE     - Set user or channel modes" + "\n" \
     ":" + SERVERNAME + " NOTICE " + nickname + " :  TOPIC    - View or change channel topic" + "\n" \
-    ":" + SERVERNAME + " NOTICE " + nickname + " :  QUIT     - Disconnect from the server" + "\n" \
     ":" + SERVERNAME + " NOTICE " + nickname + " :  INVITE   - Invite a user to a channel" + "\n" \
+    ":" + SERVERNAME + " NOTICE " + nickname + " :  NAMES    - List all users in a channel" + "\n" \
     ":" + SERVERNAME + " NOTICE " + nickname + " :  KICK     - Remove a user from a channel" + "\n" \
+    ":" + SERVERNAME + " NOTICE " + nickname + " :  QUIT     - Disconnect from the server" + "\n" \
     ":" + SERVERNAME + " NOTICE " + nickname + " :  HELP     - Show this help message" + "\n" \
     ":" + SERVERNAME + " NOTICE " + nickname + " :Type HELP <command> for more information about a specific command\n"

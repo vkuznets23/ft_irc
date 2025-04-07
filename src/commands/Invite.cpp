@@ -40,23 +40,23 @@ void Server::Invite(Client &client, const std::string &nickname, const std::stri
 
 	if (!channel->isClientInChannel(&client))
 	{
-		sendToClient(client, ERR_NOTONCHANNEL(client.getNick(), channelName));
+		sendToClient(client, ERR_NOTONCHANNEL(client.getNick(), channel->getChannelName()));
 		return;
 	}
 
 	if (channel->isClientInChannel(invite))
 	{
-		sendToClient(client, ERR_USERONCHANNEL(client.getNick(), nickname, channelName));
+		sendToClient(client, ERR_USERONCHANNEL(client.getNick(), nickname, channel->getChannelName()));
 		return;
 	}
 
 	if (channel->getInviteOnlyState() && !channel->isOperator(&client))
 	{
-		sendToClient(client, ERR_CHANOPRIVSNEEDED(client.getNick(), channelName));
+		sendToClient(client, ERR_CHANOPRIVSNEEDED(client.getNick(), channel->getChannelName()));
 		return;
 	}
 
 	channel->addInvite(nickname);
-	sendToClient(*invite, ":" + client.getNick() + " INVITE " + nickname + " " + cleanChannelName + "\r\n");
-	sendToClient(client, RPL_INVITING(client.getNick(), nickname, cleanChannelName));
+	sendToClient(*invite, ":" + client.getNick() + " INVITE " + nickname + " " + channel->getChannelName() + "\r\n");
+	sendToClient(client, RPL_INVITING(client.getNick(), nickname, channel->getChannelName()));
 }

@@ -29,52 +29,57 @@
  * 6. If the channel has no remaining users, it deletes the channel from the server.
  */
 
-void Server::Part(Client &client, const std::string &channelName, std::string message)
-{
-	auto it = _channels.find(channelName);
-	if (it == _channels.end())
-	{
-		sendToClient(client, ERR_NOSUCHCHANNEL(client.getNick(), channelName));
-		return;
-	}
-
-	Channel &channel = it->second;
-
-	if (!channel.isClientInChannel(&client))
-	{
-		sendToClient(client, ERR_USERNOTINCHANNEL(client.getNick(), channelName));
-		return;
-	}
-
-	if (channel.isOperator(&client) && channel.countOperators() == 1)
-	{
-		std::vector<Client *> clients = channel.getUsers();
-		if (!clients.empty())
-		{
-			for (Client *potentialOp : clients)
-			{
-				if (potentialOp != &client)
-				{
-					channel.setOperator(potentialOp);
-					channel.unsetOperator(&client);
-					channel.displayChannelMessagePart(potentialOp, &client);
-					sendToClient(*potentialOp, RPL_YOUREOPER(potentialOp->getNick()));
-					break;
-				}
-			}
-		}
-	}
-	
-
-	for (Client *member : channel.getUsers())
-	{
-		sendToClient(*member, RPL_PART(client.getNick(), client.getUserName(), client.getHostName(), channelName, message));
-	}
-	
-	channel.removeClient(&client);
-	client.unsetJoinedChannel(&channel);
-
-	if (channel.getUsers().empty())
-		_channels.erase(it);
-
-}
+ void Server::Part(Client &client, const std::string &channels, const std::string &message)
+ {
+	 std::stringstream ss(channels);
+	 std::string channelName;
+ 
+	 while (std::getline(ss, channelName, ','))
+	 {
+		 auto it = _channels.find(channelName);
+		 if (it == _channels.end())
+		 {
+			 sendToClient(client, ERR_NOSUCHCHANNEL(client.getNick(), channelName));
+			 continue;
+		 }
+ 
+		 Channel &channel = it->second;
+ 
+		 if (!channel.isClientInChannel(&client))
+		 {
+			 sendToClient(client, ERR_USERNOTINCHANNEL(client.getNick(), channelName));
+			 continue;
+		 }
+ 
+		 if (channel.isOperator(&client) && channel.countOperators() == 1)
+		 {
+			 std::vector<Client *> clients = channel.getUsers();
+			 if (!clients.empty())
+			 {
+				 for (Client *potentialOp : clients)
+				 {
+					 if (potentialOp != &client)
+					 {
+						 channel.setOperator(potentialOp);
+						 channel.unsetOperator(&client);
+						 channel.displayChannelMessagePart(potentialOp, &client);
+						 sendToClient(*potentialOp, RPL_YOUREOPER(potentialOp->getNick()));
+						 break;
+					 }
+				 }
+			 }
+		 }
+ 
+		 for (Client *member : channel.getUsers())
+		 {
+			 sendToClient(*member, RPL_PART(client.getNick(), client.getUserName(), client.getHostName(), channelName, message));
+		 }
+ 
+		 channel.removeClient(&client);
+		 client.unsetJoinedChannel(&channel);
+ 
+		 if (channel.getUsers().empty())
+			 _channels.erase(it);
+	 }
+ }
+ 
