@@ -15,14 +15,16 @@
 #include "../../inc/Message.hpp"
 
 /**
- * This function is called when a client quits the server. It:
- * 1. Retrieves the list of channels the client has joined.
- * 2. Notifies other members of these channels that the client has left.
- * 3. Removes the client from all joined channels.
- *
- * The function ensures that the channel's member list is not modified
- * while iterating over it by making a copy beforehand.
+ * This function processes the client's request to quit the server, performing the following actions:
+ * 
+ * 1. Iterates over all channels the client is currently a member of, and removes the client from each channel using the PART command.
+ * 2. Sends a QUIT message to all clients notifying them of the client's departure from the server.
+ * 3. Closes the client's socket and disables the corresponding poll file descriptor.
+ * 4. Removes the client from the server's list of clients.
+ * 5. Frees the client's memory by deleting the client object.
+ * 6. Logs the client's disconnection from the server to the console.
  */
+
 
 void Server::disablePollfd(int fd)
 {

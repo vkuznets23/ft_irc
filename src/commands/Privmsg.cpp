@@ -73,6 +73,23 @@ std::vector<std::string> Server::parseTargets(const std::string &msgtarget, Clie
 	return allTargets;
 }
 
+/**
+ * This function processes the client's request to send a message to one or more targets. The steps performed are as follows:
+ * 
+ * 1. Checks for basic errors in the message, such as invalid target or empty message.
+ * 2. Parses the list of targets (clients or channels) from the msgtarget string.
+ * 3. For each target:
+ *    - If the target is a channel:
+ *      - Verifies the channel exists.
+ *      - Ensures the client is a member of the channel before sending the message.
+ *      - If the client is not in the channel, an error is sent.
+ *    - If the target is a client:
+ *      - Verifies the client exists.
+ *      - Sends the message to the recipient client.
+ * 4. If the message is a channel message, it is sent to all members of the channel. 
+ *    If the message is a private message, it is sent to the specified recipient client.
+ */
+
 
 void Server::Privmsg(Client &client, const std::string &msgtarget, const std::string &message)
 {

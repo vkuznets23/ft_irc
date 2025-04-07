@@ -15,18 +15,17 @@
 #include "../../inc/Channel.hpp"
 #include "../../inc/Message.hpp"
 
-/**
- * Handles a client leaving a channel by sending the appropriate PART message
- * to all channel members and performing necessary updates to the channel's state.
+/** 
+ * This function processes a client's request to part from one or more channels. The following checks and actions are performed:
  * 
- * 1. Checks if the channel exists. If not, it sends an error message to the client.
- * 2. Verifies if the client is in the channel. If not, it sends an error message.
- * 3. If the client leaving the channel is an operator, it checks if there are other operators in the channel.
- *    - If there are no other operators, it assigns the first available client as the new operator.
- *    - If the channel is empty after the client leaves, it removes the channel from the server's list of channels.
- * 4. Sends the PART message to all members of the channel to notify them of the client's departure.
- * 5. Removes the client from the channel's list of users.
- * 6. If the channel has no remaining users, it deletes the channel from the server.
+ * 1. The list of channel names is parsed (comma-separated).
+ * 2. For each channel:
+ *    - Verifies the channel exists.
+ *    - Checks if the client is currently in the channel.
+ *    - If the client is an operator and the only operator in the channel, transfers operator privileges to another client (if possible).
+ * 3. Sends a PART message to all other members of the channel, notifying them of the client's departure.
+ * 4. Removes the client from the channel and updates the channel list.
+ * 5. If the channel becomes empty after the client parts, it is removed from the server's list of channels.
  */
 
 void Server::Part(Client &client, const std::string &channels, const std::string &message)

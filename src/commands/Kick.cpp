@@ -15,6 +15,22 @@
 #include "../../inc/Channel.hpp"
 #include "../../inc/Message.hpp"
 
+/**
+ * This function allows a channel operator to forcibly remove a user from a channel.
+ * It performs several checks to ensure proper permissions and valid inputs:
+ * 
+ * 1. Verifies that the specified channel exists.
+ * 2. Ensures the client issuing the command is in the channel.
+ * 3. Checks that the client has operator privileges in the channel.
+ * 4. Confirms the target user exists and is in the same channel.
+ * 5. Prevents a user from kicking themselves.
+ * 
+ * If all checks pass, the target client is removed from the channel, and both
+ * the kicker and the kicked user are notified. The kick reason is also cleaned 
+ * and formatted before being sent.
+ */
+
+
 void Server::Kick(Client &client, const std::string &channelName, const std::string &target, std::string &reason)
 {
 	Channel *channel = getChannelByChannelName(channelName);

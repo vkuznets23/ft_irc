@@ -15,6 +15,20 @@
 #include "../../inc/Channel.hpp"
 #include "../../inc/Message.hpp"
 
+/**
+ * This function allows a client to invite another user to a channel.
+ * It performs various checks before sending the invitation:
+ * 
+ * 1. Checks if the invited nickname exists.
+ * 2. Ensures the channel name is valid and exists.
+ * 3. Confirms the inviter is a member of the channel.
+ * 4. Verifies that the invited user is not already in the channel.
+ * 5. If the channel is invite-only, checks if the inviter has operator privileges.
+ * 
+ * If all conditions are met, the invited user is added to the channel's invite list,
+ * and both the inviter and invitee are notified.
+ */
+
 void Server::Invite(Client &client, const std::string &nickname, const std::string &channelName)
 {
 

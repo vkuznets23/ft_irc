@@ -17,13 +17,19 @@
 #include "../../inc/Message.hpp"
 
 /**
- * This function allows a client to view or modify the topic of a channel.
- * - If the channel does not exist, an error is returned.
- * - If the client is not a member of the channel, they cannot change the topic.
- * - If the topic is restricted and the client is not an operator, they cannot modify it.
- * - If no new topic is provided, the current topic is returned.
- * - If a new topic is provided, it is set and broadcasted to all members of the channel.
+ * This function processes a client's request to either retrieve or set the topic of a channel. The following actions are performed:
+ * 
+ * 1. Checks if the channel exists. If not, sends an error message (ERR_NOSUCHCHANNEL).
+ * 2. If no new topic is provided, it sends the current topic of the channel to the client. 
+ *    - If the channel has no topic set, it sends the RPL_NOTOPIC message.
+ * 3. If a new topic is provided, the following checks are performed:
+ *    - Verifies the client is a member of the channel. If not, an error message is sent (ERR_USERNOTINCHANNEL).
+ *    - If the channel restricts topic changes to operators only, it checks if the client is an operator. If not, an error message is sent (ERR_CHANOPRIVSNEEDED).
+ * 4. Cleans the new topic (removes leading and trailing spaces, and potential invalid characters).
+ * 5. If the new topic is empty, it unsets the topic for the channel and notifies the client and other members.
+ * 6. If the new topic is valid, it sets the topic for the channel and notifies the client and other members.
  */
+
 
 void Server::Topic(Client &client, const std::string &channelName, const std::string &newTopic)
 {

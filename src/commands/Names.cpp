@@ -15,6 +15,17 @@
 #include "../../inc/Message.hpp"
 #include "../../inc/Server.hpp"
 
+/**
+ * This function sends the list of nicknames of users currently in the specified channel
+ * to the client. It follows these steps:
+ * 
+ * 1. Checks whether the channel exists. If not, sends an error message to the client.
+ * 2. Iterates over all users in the channel.
+ *    - Adds an "@" prefix to nicknames of channel operators to indicate their status.
+ * 3. Sends a formatted list of users to the client using numeric reply 353.
+ * 4. Sends the end of names list notification (numeric reply 366).
+ */
+
 void Server::handleNamesCommand(Client &client, const std::string &channelName)
 {
     Channel *channel = getChannelByChannelName(channelName);
@@ -25,17 +36,15 @@ void Server::handleNamesCommand(Client &client, const std::string &channelName)
         return;
     }
 
-    // Get user list in the channel
     std::string userList;
     for (Client *member : channel->getUsers())
     {
         if (channel->isOperator(member))
-            userList += "@" + member->getNick() + " "; // '@' means the user is an operator
+            userList += "@" + member->getNick() + " ";
         else
             userList += member->getNick() + " ";
     }
 
-    // Send responses
     sendToClient(client, ":ircserv 353 " + client.getNick() + " = " + channelName + " :" + userList);
     sendToClient(client, RPL_ENDOFNAMES(client.getNick(), channelName));
 }

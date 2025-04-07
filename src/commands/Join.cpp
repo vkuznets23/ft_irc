@@ -66,10 +66,21 @@ bool Server::checkChannelType(Client &client, Channel &channel, const std::strin
 }
 
 /**
- * This function handles a client joining one or more channels. 
- * It checks if the channels exist, validates mode restrictions, adds the client to the channel, 
- * and sends appropriate messages to the client and other members of the channel.
+ * This function allows a client to join one or more channels, optionally providing
+ * passwords for password-protected channels. It processes the JOIN request as follows:
+ * 
+ * 1. Parses the comma-separated list of channel names and passwords.
+ * 2. For each channel:
+ *    - Validates the channel name format.
+ *    - Checks if the channel already exists:
+ *       a. If it exists, verifies access rights (invite-only, user limit, password).
+ *       b. If validation passes, adds the client to the channel.
+ *    - If the channel doesn't exist, creates it and assigns the client as operator.
+ * 3. Sends the appropriate JOIN message to all channel members.
+ * 4. Sends the channel topic (or "no topic" message) to the client.
+ * 5. Sends the NAMES list for the channel to the client.
  */
+
 
 void Server::Join(Client &client, std::string &channels, std::string &passwords)
 {
@@ -79,14 +90,12 @@ void Server::Join(Client &client, std::string &channels, std::string &passwords)
 		return;
 	}
 
-	// Séparer les canaux
 	std::vector<std::string> channelList;
 	std::stringstream ssChannels(channels);
 	std::string channelName;
 	while (std::getline(ssChannels, channelName, ','))
 		channelList.push_back(channelName);
 
-	// Séparer les mots de passe (s'il y en a)
 	std::vector<std::string> passwordList;
 	std::stringstream ssPasswords(passwords);
 	std::string pass;
