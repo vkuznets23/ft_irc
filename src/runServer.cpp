@@ -178,6 +178,10 @@ void Server::runServer()
 				{
 					std::cout << "Client disconnected" << std::endl;
 					close(fds[i].fd);
+					Client* clientToRemove = _clients[i - 1];
+					close(clientToRemove->getFd());
+					disablePollfd(clientToRemove->getFd());
+					delete clientToRemove;
 					_clients.erase(_clients.begin() + i - 1);
 				}
 				else
