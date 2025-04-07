@@ -80,11 +80,6 @@ void Server::handleMinusModes(Channel *channel, char mode, const std::vector<std
     case 'k':
         channel->unsetChannelPassword();
         setModes += "-k";
-        if (setParameters.empty())
-            setParameters += parameters[i];
-        else
-            setParameters += " " + parameters[i];
-        i++;
         break;
     case 'l':
         if (channel->getUserLimit() != -1)
