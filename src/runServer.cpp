@@ -121,13 +121,15 @@ void Server::acceptNewConnection(int server_fd)
 
 void Server::cleanupResources(int server_fd)
 {
-	for (auto &client : _clients)
-	{
-		close(client->getFd());
-		delete client;
-	}
-	_clients.clear();
-	close(server_fd);
+    for (auto &client : _clients)
+    {
+        close(client->getFd());
+		disablePollfd(client->getFd());
+        delete client;
+    }
+    _clients.clear();
+    _channels.clear();
+    close(server_fd);
 }
 
 void Server::runServer()

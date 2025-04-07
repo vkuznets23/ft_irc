@@ -220,14 +220,11 @@ void Channel::displayChannelMessageTopic(Client &sender, const std::string &mess
 			.base(),
 		cleanedMessage.end());
 
-	std::string fullMsg = ":" + sender.getNick() + " TOPIC " + _channelName + " " + cleanedMessage;
+	std::string fullMsg = ":" + sender.getNick() + " TOPIC " + _channelName + " :" + cleanedMessage;
 
 	for (Client *client : _userList)
 	{
-		if (client != &sender)
-		{
-			Server::sendToClient(*client, fullMsg);
-		}
+		Server::sendToClient(*client, fullMsg);
 	}
 }
 
