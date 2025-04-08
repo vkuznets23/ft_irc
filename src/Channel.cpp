@@ -210,7 +210,7 @@ void Channel::displayChannelMessageKick(Client &sender, const std::string &messa
 		}
 	}
 }
-
+//":" + nickname + "!~" + username + "@" + hostname + " MODE " + channel + " " + mode + " " + target
 void Channel::displayChannelMessageTopic(Client &sender, const std::string &message)
 {
 	std::string cleanedMessage = message;
@@ -220,7 +220,7 @@ void Channel::displayChannelMessageTopic(Client &sender, const std::string &mess
 			.base(),
 		cleanedMessage.end());
 
-	std::string fullMsg = ":" + sender.getNick() + " TOPIC " + _channelName + " :" + cleanedMessage;
+	std::string fullMsg = ":" + sender.getNick() + "!~" + sender.getUserName() + "@" + sender.getHostName() + " TOPIC " + _channelName + " :" + cleanedMessage;
 
 	for (Client *client : _userList)
 	{
@@ -234,10 +234,7 @@ void Channel::displayChannelMessagePart(Client *client, Client *oldOp)
 
     for (Client *member : _userList)
     {
-        if (member != client)
-        {
-            Server::sendToClient(*client, RPL_MODE(oldOp->getNick(), oldOp->getUserName(), _channelName, oldOp->getHostName(), "+o", client->getNick()));
-        }
+        Server::sendToClient(*member, RPL_MODE(oldOp->getNick(), oldOp->getUserName(), _channelName, oldOp->getHostName(), "+o", client->getNick()));
     }
 }
 
